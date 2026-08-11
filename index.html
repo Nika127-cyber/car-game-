@@ -2,1016 +2,609 @@
 <html lang="ka">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Street Legends</title>
 
-    <title>
-        Street Legends
-    </title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
+    <!-- =========================
+         AUTH SCREEN
+    ========================== -->
 
-<!-- =====================================================
-     LOADING SCREEN
-===================================================== -->
+    <div id="authScreen" class="auth-screen">
 
-<div
-    id="loadingScreen"
-    class="loading-screen"
->
+        <div class="auth-card">
 
-    <div class="loading-content">
+            <div class="auth-logo">
+                🏎️
+            </div>
 
-        <div class="loading-logo">
-            🏎️
-        </div>
+            <h1>STREET LEGENDS</h1>
 
-        <h1>
-            STREET LEGENDS
-        </h1>
-
-        <p id="loadingText">
-            იტვირთება...
-        </p>
-
-        <div class="loading-bar">
-
-            <div
-                id="loadingProgress"
-                class="loading-progress"
-            ></div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     APP
-===================================================== -->
-
-<div
-    id="app"
-    class="app hidden"
->
-
-
-<!-- =====================================================
-     TOP BAR
-===================================================== -->
-
-<header class="top-bar">
-
-
-    <div class="logo">
-
-        <span>
-            🏎️
-        </span>
-
-        <strong>
-            STREET LEGENDS
-        </strong>
-
-    </div>
-
-
-    <div class="player-resources">
-
-
-        <div class="resource">
-
-            💰
-
-            <span id="playerMoney">
-                5000
-            </span>
-
-        </div>
-
-
-        <div class="resource">
-
-            💎
-
-            <span id="playerGold">
-                100
-            </span>
-
-        </div>
-
-
-        <div class="resource">
-
-            ⭐
-
-            <span id="playerLevel">
-                1
-            </span>
-
-        </div>
-
-    </div>
-
-
-</header>
-
-
-
-<!-- =====================================================
-     MAIN CONTENT
-===================================================== -->
-
-<main class="main-content">
-
-
-<!-- =====================================================
-     HOME
-===================================================== -->
-
-<section
-    id="homeScreen"
-    class="screen active"
->
-
-
-    <div class="hero-section">
-
-
-        <div class="hero-text">
-
-
-            <span class="eyebrow">
-                WELCOME BACK
-            </span>
-
-
-            <h1>
-
-                <span id="playerName">
-                    Guest
-                </span>
-
-                <br>
-
-                READY TO RACE?
-
-            </h1>
-
-
-            <p>
-
-                აარჩიე შენი მანქანა,
-                გადი ქუჩებში და გახდი
-                ყველაზე სწრაფი მრბოლელი.
-
+            <p class="auth-subtitle">
+                შენი ქუჩა. შენი მანქანა. შენი ლეგენდა.
             </p>
 
 
-            <button
-                class="primary-btn"
-                data-start-race
+            <!-- LOGIN -->
+
+            <div id="loginForm">
+
+                <h2>შესვლა</h2>
+
+                <input
+                    id="loginEmail"
+                    type="email"
+                    placeholder="Email"
+                >
+
+                <input
+                    id="loginPassword"
+                    type="password"
+                    placeholder="Password"
+                >
+
+                <button
+                    id="loginButton"
+                    class="primary-btn"
+                >
+                    შესვლა
+                </button>
+
+                <p id="loginMessage"></p>
+
+                <button
+                    id="showRegister"
+                    class="text-button"
+                >
+                    ანგარიში არ გაქვს? რეგისტრაცია
+                </button>
+
+            </div>
+
+
+            <!-- REGISTER -->
+
+            <div
+                id="registerForm"
+                class="hidden"
             >
 
-                🏁 START RACE
+                <h2>რეგისტრაცია</h2>
 
+                <input
+                    id="registerUsername"
+                    type="text"
+                    placeholder="Nickname"
+                    maxlength="20"
+                >
+
+                <input
+                    id="registerEmail"
+                    type="email"
+                    placeholder="Email"
+                >
+
+                <input
+                    id="registerPassword"
+                    type="password"
+                    placeholder="Password"
+                >
+
+                <button
+                    id="registerButton"
+                    class="primary-btn"
+                >
+                    ანგარიშის შექმნა
+                </button>
+
+                <p id="registerMessage"></p>
+
+                <button
+                    id="showLogin"
+                    class="text-button"
+                >
+                    უკვე გაქვს ანგარიში? შესვლა
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         GAME
+    ========================== -->
+
+    <div
+        id="gameApp"
+        class="hidden"
+    >
+
+        <!-- TOP BAR -->
+
+        <header class="top-bar">
+
+            <div class="logo">
+
+                <span>🏎️</span>
+
+                <strong>
+                    STREET LEGENDS
+                </strong>
+
+            </div>
+
+
+            <div class="player-info">
+
+                <span id="gameUsername">
+                    Player
+                </span>
+
+                <span>
+                    💰 <b id="gameMoney">0</b>
+                </span>
+
+                <span>
+                    ⭐ <b id="gameLevel">1</b>
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- MAIN -->
+
+        <main class="main-content">
+
+
+            <!-- HOME -->
+
+            <section
+                id="homeScreen"
+                class="screen active"
+            >
+
+                <div class="hero">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            STREET LEGENDS
+                        </span>
+
+                        <h1>
+                            BECOME<br>
+                            THE LEGEND
+                        </h1>
+
+                        <p>
+                            იყიდე მანქანები,
+                            გააუმჯობესე ისინი,
+                            იასპარეზე და გახდი
+                            ყველაზე სწრაფი მოთამაშე.
+                        </p>
+
+                        <button
+                            id="startRaceButton"
+                            class="primary-btn"
+                        >
+                            🏁 START RACE
+                        </button>
+
+                    </div>
+
+
+                    <div class="hero-car">
+                        🚗
+                    </div>
+
+                </div>
+
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <span>🏆</span>
+                        <div>
+                            <small>WINS</small>
+                            <strong id="homeWins">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <span>🚗</span>
+                        <div>
+                            <small>CARS</small>
+                            <strong id="homeCars">1</strong>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <span>⚡</span>
+                        <div>
+                            <small>BEST SPEED</small>
+                            <strong id="homeSpeed">0</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- GARAGE -->
+
+            <section
+                id="garageScreen"
+                class="screen"
+            >
+
+                <div class="page-title">
+
+                    <span class="eyebrow">
+                        MY COLLECTION
+                    </span>
+
+                    <h1>
+                        GARAGE
+                    </h1>
+
+                </div>
+
+                <div
+                    id="garageGrid"
+                    class="cars-grid"
+                ></div>
+
+            </section>
+
+
+            <!-- CARS -->
+
+            <section
+                id="carsScreen"
+                class="screen"
+            >
+
+                <div class="page-title">
+
+                    <span class="eyebrow">
+                        DEALERSHIP
+                    </span>
+
+                    <h1>
+                        CARS
+                    </h1>
+
+                </div>
+
+                <div
+                    id="carsGrid"
+                    class="cars-grid"
+                ></div>
+
+            </section>
+
+
+            <!-- RACE -->
+
+            <section
+                id="raceScreen"
+                class="screen"
+            >
+
+                <div class="page-title">
+
+                    <span class="eyebrow">
+                        RACING
+                    </span>
+
+                    <h1>
+                        RACE
+                    </h1>
+
+                </div>
+
+
+                <div class="race-container">
+
+                    <div
+                        id="raceRoad"
+                        class="race-road"
+                    >
+
+                        <div
+                            id="playerCar"
+                            class="player-car"
+                        >
+                            🚗
+                        </div>
+
+                        <div
+                            id="raceCountdown"
+                            class="race-countdown"
+                        >
+                            3
+                        </div>
+
+                    </div>
+
+
+                    <div class="race-controls">
+
+                        <button id="leftButton">
+                            ◀
+                        </button>
+
+                        <button id="brakeButton">
+                            🛑
+                        </button>
+
+                        <button
+                            id="accelerateButton"
+                            class="accelerate"
+                        >
+                            ▲
+                        </button>
+
+                        <button
+                            id="nitroButton"
+                            class="nitro"
+                        >
+                            ⚡
+                        </button>
+
+                        <button id="rightButton">
+                            ▶
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- MISSIONS -->
+
+            <section
+                id="missionsScreen"
+                class="screen"
+            >
+
+                <div class="page-title">
+
+                    <span class="eyebrow">
+                        DAILY
+                    </span>
+
+                    <h1>
+                        MISSIONS
+                    </h1>
+
+                </div>
+
+                <div
+                    id="missionsList"
+                    class="missions-list"
+                ></div>
+
+            </section>
+
+
+            <!-- SHOP -->
+
+            <section
+                id="shopScreen"
+                class="screen"
+            >
+
+                <div class="page-title">
+
+                    <span class="eyebrow">
+                        MARKET
+                    </span>
+
+                    <h1>
+                        SHOP
+                    </h1>
+
+                </div>
+
+                <div
+                    id="shopGrid"
+                    class="shop-grid"
+                ></div>
+
+            </section>
+
+
+            <!-- LEADERBOARD -->
+
+            <section
+                id="leaderboardScreen"
+                class="screen"
+            >
+
+                <div class="page-title">
+
+                    <span class="eyebrow">
+                        GLOBAL
+                    </span>
+
+                    <h1>
+                        LEADERBOARD
+                    </h1>
+
+                </div>
+
+                <div
+                    id="leaderboardList"
+                    class="leaderboard"
+                ></div>
+
+            </section>
+
+
+            <!-- PROFILE -->
+
+            <section
+                id="profileScreen"
+                class="screen"
+            >
+
+                <div class="profile-card">
+
+                    <div class="profile-avatar">
+                        🏎️
+                    </div>
+
+                    <h1 id="profileUsername">
+                        Player
+                    </h1>
+
+                    <p>
+                        Level
+                        <b id="profileLevel">
+                            1
+                        </b>
+                    </p>
+
+                    <div class="profile-stats">
+
+                        <div>
+                            <strong id="profileWins">
+                                0
+                            </strong>
+
+                            <span>
+                                WINS
+                            </span>
+                        </div>
+
+                        <div>
+                            <strong id="profileCars">
+                                1
+                            </strong>
+
+                            <span>
+                                CARS
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        id="logoutButton"
+                        class="secondary-btn"
+                    >
+                        გასვლა
+                    </button>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="bottom-nav">
+
+            <button
+                class="nav-button active"
+                data-screen="homeScreen"
+            >
+                🏠
+                <span>HOME</span>
             </button>
 
+            <button
+                class="nav-button"
+                data-screen="raceScreen"
+            >
+                🏁
+                <span>RACE</span>
+            </button>
 
-        </div>
-
-
-        <div class="hero-car">
-
-            <div
-                id="homeCar"
-                class="big-car"
+            <button
+                class="nav-button"
+                data-screen="garageScreen"
             >
                 🚗
-            </div>
+                <span>GARAGE</span>
+            </button>
 
-        </div>
+            <button
+                class="nav-button"
+                data-screen="carsScreen"
+            >
+                🛒
+                <span>CARS</span>
+            </button>
 
+            <button
+                class="nav-button"
+                data-screen="missionsScreen"
+            >
+                🎯
+                <span>MISSIONS</span>
+            </button>
 
-    </div>
+            <button
+                class="nav-button"
+                data-screen="shopScreen"
+            >
+                💰
+                <span>SHOP</span>
+            </button>
 
-
-
-    <!-- PLAYER STATS -->
-
-    <div class="stats-grid">
-
-
-        <div class="stat-card">
-
-            <span>
+            <button
+                class="nav-button"
+                data-screen="leaderboardScreen"
+            >
                 🏆
-            </span>
+                <span>RANK</span>
+            </button>
 
-            <div>
+            <button
+                class="nav-button"
+                data-screen="profileScreen"
+            >
+                👤
+                <span>PROFILE</span>
+            </button>
 
-                <small>
-                    WINS
-                </small>
-
-                <strong id="winsStat">
-                    0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <span>
-                🚗
-            </span>
-
-            <div>
-
-                <small>
-                    CARS
-                </small>
-
-                <strong id="carsStat">
-                    1
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <span>
-                ⚡
-            </span>
-
-            <div>
-
-                <small>
-                    BEST SPEED
-                </small>
-
-                <strong id="speedStat">
-                    180 KM/H
-                </strong>
-
-            </div>
-
-        </div>
-
+        </nav>
 
     </div>
 
 
-
-    <!-- XP -->
-
-    <div class="xp-card">
-
-
-        <div class="xp-header">
-
-            <span>
-                LEVEL
-                <strong id="playerLevel">
-                    1
-                </strong>
-            </span>
-
-            <span>
-                XP
-            </span>
-
-        </div>
-
-
-        <div class="xp-bar">
-
-            <div
-                id="xpBar"
-                class="xp-progress"
-            ></div>
-
-        </div>
-
-    </div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     RACE
-===================================================== -->
-
-<section
-    id="raceScreen"
-    class="screen"
->
-
-
-    <div class="race-header">
-
-
-        <div>
-
-            <span>
-                CURRENT CAR
-            </span>
-
-            <strong id="raceCarName">
-                Street Runner
-            </strong>
-
-        </div>
-
-
-        <div>
-
-            <span>
-                CLASS
-            </span>
-
-            <strong id="raceCarClass">
-                D
-            </strong>
-
-        </div>
-
-
-        <div>
-
-            <span>
-                MAX SPEED
-            </span>
-
-            <strong id="raceMaxSpeed">
-                180 KM/H
-            </strong>
-
-        </div>
-
-
-    </div>
-
-
-
-    <!-- RACE ROAD -->
-
-    <div
-        id="raceRoad"
-        class="race-road"
-    >
-
-
-        <div class="road-line line-one"></div>
-
-        <div class="road-line line-two"></div>
-
-
-        <div
-            id="raceCountdown"
-            class="race-countdown"
-        >
-            3
-        </div>
-
-
-        <div
-            id="playerCar"
-            class="player-car"
-        >
-            🚗
-        </div>
-
-
-    </div>
-
-
-
-    <!-- RACE HUD -->
-
-    <div class="race-hud">
-
-
-        <div class="race-hud-box">
-
-            <small>
-                SPEED
-            </small>
-
-            <strong id="raceSpeed">
-                0 KM/H
-            </strong>
-
-        </div>
-
-
-        <div class="race-hud-box">
-
-            <small>
-                DISTANCE
-            </small>
-
-            <strong id="raceDistance">
-                0.00 KM
-            </strong>
-
-        </div>
-
-
-        <div class="race-hud-box">
-
-            <small>
-                TIME
-            </small>
-
-            <strong id="raceTimer">
-                00:00:00
-            </strong>
-
-        </div>
-
-
-    </div>
-
-
-
-    <!-- NITRO -->
-
-    <div class="nitro-container">
-
-
-        <span>
-            ⚡ NITRO
-        </span>
-
-
-        <div class="nitro-bar">
-
-            <div
-                id="raceNitro"
-                class="nitro-progress"
-            ></div>
-
-        </div>
-
-
-    </div>
-
-
-
-    <!-- MOBILE CONTROLS -->
-
-    <div class="mobile-controls">
-
-
-        <button
-            id="leftControl"
-            class="control-btn"
-        >
-            ◀
-        </button>
-
-
-        <button
-            id="brakeControl"
-            class="control-btn"
-        >
-            🛑
-        </button>
-
-
-        <button
-            id="accelerateControl"
-            class="control-btn big-control"
-        >
-            ▲
-        </button>
-
-
-        <button
-            id="nitroControl"
-            class="control-btn nitro-control"
-        >
-            ⚡
-        </button>
-
-
-        <button
-            id="rightControl"
-            class="control-btn"
-        >
-            ▶
-        </button>
-
-
-    </div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     GARAGE
-===================================================== -->
-
-<section
-    id="garageScreen"
-    class="screen"
->
-
-
-    <div class="page-header">
-
-        <div>
-
-            <span class="eyebrow">
-                MY CARS
-            </span>
-
-            <h1>
-                GARAGE
-            </h1>
-
-        </div>
-
-    </div>
-
-
-    <div
-        id="garageGrid"
-        class="cars-grid"
-    ></div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     CARS SHOP
-===================================================== -->
-
-<section
-    id="carsScreen"
-    class="screen"
->
-
-
-    <div class="page-header">
-
-        <div>
-
-            <span class="eyebrow">
-                CAR DEALERSHIP
-            </span>
-
-            <h1>
-                CARS
-            </h1>
-
-        </div>
-
-    </div>
-
-
-    <div
-        id="carsGrid"
-        class="cars-grid"
-    ></div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     MISSIONS
-===================================================== -->
-
-<section
-    id="missionsScreen"
-    class="screen"
->
-
-
-    <div class="page-header">
-
-        <div>
-
-            <span class="eyebrow">
-                DAILY OBJECTIVES
-            </span>
-
-            <h1>
-                MISSIONS
-            </h1>
-
-        </div>
-
-    </div>
-
-
-    <div
-        id="missionsList"
-        class="missions-list"
-    ></div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     SHOP
-===================================================== -->
-
-<section
-    id="shopScreen"
-    class="screen"
->
-
-
-    <div class="page-header">
-
-        <div>
-
-            <span class="eyebrow">
-                MARKET
-            </span>
-
-            <h1>
-                SHOP
-            </h1>
-
-        </div>
-
-    </div>
-
-
-    <div
-        id="shopGrid"
-        class="shop-grid"
-    ></div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     LEADERBOARD
-===================================================== -->
-
-<section
-    id="leaderboardScreen"
-    class="screen"
->
-
-
-    <div class="page-header">
-
-        <div>
-
-            <span class="eyebrow">
-                GLOBAL RANKING
-            </span>
-
-            <h1>
-                LEADERBOARD
-            </h1>
-
-        </div>
-
-    </div>
-
-
-    <div class="leaderboard">
-
-
-        <div class="leaderboard-header">
-
-            <span>
-                RANK
-            </span>
-
-            <span>
-                PLAYER
-            </span>
-
-            <span>
-                LEVEL
-            </span>
-
-            <span>
-                XP
-            </span>
-
-        </div>
-
-
-        <div
-            id="leaderboardList"
-        ></div>
-
-
-    </div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     PROFILE
-===================================================== -->
-
-<section
-    id="profileScreen"
-    class="screen"
->
-
-
-    <div class="profile-card">
-
-
-        <div class="profile-avatar">
-            🏎️
-        </div>
-
-
-        <h1 id="profileName">
-            Guest
-        </h1>
-
-
-        <p>
-
-            LEVEL
-            <strong id="profileLevel">
-                1
-            </strong>
-
-        </p>
-
-
-        <div class="profile-stats">
-
-
-            <div>
-
-                <strong id="profileWins">
-                    0
-                </strong>
-
-                <span>
-                    WINS
-                </span>
-
-            </div>
-
-
-            <div>
-
-                <strong id="profileCars">
-                    1
-                </strong>
-
-                <span>
-                    CARS
-                </span>
-
-            </div>
-
-
-        </div>
-
-
-        <button
-            class="secondary-btn"
-            onclick="resetPlayer()"
-        >
-
-            RESET ACCOUNT
-
-        </button>
-
-
-    </div>
-
-
-</section>
-
-
-</main>
-
-
-
-<!-- =====================================================
-     PAUSE SCREEN
-===================================================== -->
-
-<div
-    id="pauseScreen"
-    class="overlay-screen"
-    style="display:none;"
->
-
-
-    <div class="pause-card">
-
-        <h1>
-            PAUSED
-        </h1>
-
-
-        <button
-            class="primary-btn"
-            data-game-action="resume"
-        >
-            ▶ RESUME
-        </button>
-
-
-        <button
-            class="secondary-btn"
-            data-game-action="home"
-        >
-            🏠 HOME
-        </button>
-
-    </div>
-
-
-</div>
-
-
-
-<!-- =====================================================
-     BOTTOM NAVIGATION
-===================================================== -->
-
-<nav class="bottom-nav">
-
-
-    <button
-        class="nav-btn active"
-        data-screen="homeScreen"
-    >
-
-        <span>
-            🏠
-        </span>
-
-        HOME
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        data-screen="raceScreen"
-    >
-
-        <span>
-            🏁
-        </span>
-
-        RACE
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        data-screen="garageScreen"
-    >
-
-        <span>
-            🚗
-        </span>
-
-        GARAGE
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        data-screen="carsScreen"
-    >
-
-        <span>
-            🛒
-        </span>
-
-        CARS
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        data-screen="shopScreen"
-    >
-
-        <span>
-            💰
-        </span>
-
-        SHOP
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        data-screen="leaderboardScreen"
-    >
-
-        <span>
-            🏆
-        </span>
-
-        RANK
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        data-screen="profileScreen"
-    >
-
-        <span>
-            👤
-        </span>
-
-        PROFILE
-
-    </button>
-
-
-</nav>
-
-
-</div>
-
-
-
-<!-- =====================================================
-     JAVASCRIPT
-===================================================== -->
-
-<script
-    src="js/player.js"
-></script>
-
-<script
-    src="js/cars.js"
-></script>
-
-<script
-    src="js/garage.js"
-></script>
-
-<script
-    src="js/race.js"
-></script>
-
-<script
-    src="js/game.js"
-></script>
-
-<script
-    src="js/main.js"
-></script>
-
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script
+        type="module"
+        src="js/auth.js"
+    ></script>
+
+    <script
+        type="module"
+        src="js/main.js"
+    ></script>
 
 </body>
 
