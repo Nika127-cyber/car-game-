@@ -1,174 +1,131 @@
-// =====================================================
-// STREET LEGENDS
-// MAIN GAME CONTROLLER
-// =====================================================
-
-import {
-    auth,
-    db
-} from "./firebase.js";
-
-import {
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-
-import {
-    doc,
-    getDoc,
-    updateDoc,
-    collection,
-    getDocs,
-    orderBy,
-    query,
-    limit
-} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+```javascript
+/* =========================================================
+   STREET LEGENDS
+   MAIN GAME CONTROLLER
+   ========================================================= */
 
 
-// =====================================================
-// GLOBAL PLAYER
-// =====================================================
+/* =========================================================
+   PLAYER DATA
+========================================================= */
 
-let player = null;
-let currentUser = null;
+let player = {
 
-let selectedCarId = "street-runner";
+    name: "Player",
 
-let raceRunning = false;
-let raceFinished = false;
+    money: 5000,
 
-let raceSpeed = 0;
-let raceDistance = 0;
-let racePosition = 50;
+    level: 1,
 
-let nitro = 100;
+    xp: 0,
 
-let raceInterval = null;
-let raceTimer = null;
+    wins: 0,
+
+    races: 0,
+
+    bestSpeed: 0,
+
+    ownedCars: [
+        "starter"
+    ],
+
+    selectedCar: "starter"
+
+};
 
 
-// =====================================================
-// CAR DATABASE
-// =====================================================
+/* =========================================================
+   CAR DATABASE
+========================================================= */
 
 const cars = [
 
     {
-        id: "street-runner",
+        id: "starter",
         brand: "Street",
         name: "Runner",
         type: "Starter",
-        class: "D",
+        class: "C",
         emoji: "🚗",
         price: 0,
         levelRequired: 1,
 
         stats: {
             speed: 180,
-            acceleration: 45,
-            handling: 55
+            acceleration: 55,
+            handling: 60,
+            braking: 55
         }
     },
 
+
     {
-        id: "night-shadow",
+        id: "eclipse",
         brand: "Night",
-        name: "Shadow",
-        type: "Street",
-        class: "C",
+        name: "Eclipse",
+        type: "Sport",
+        class: "B",
         emoji: "🏎️",
-        price: 8500,
+        price: 12000,
         levelRequired: 3,
 
         stats: {
-            speed: 230,
-            acceleration: 60,
-            handling: 65
-        }
-    },
-
-    {
-        id: "turbo-x",
-        brand: "Turbo",
-        name: "X",
-        type: "Sport",
-        class: "C",
-        emoji: "🚘",
-        price: 18000,
-        levelRequired: 5,
-
-        stats: {
-            speed: 270,
+            speed: 240,
             acceleration: 70,
-            handling: 72
+            handling: 68,
+            braking: 65
         }
     },
 
+
     {
-        id: "phantom-r",
+        id: "phantom",
         brand: "Phantom",
-        name: "R",
+        name: "GT",
         type: "Super",
-        class: "B",
+        class: "A",
         emoji: "🏎️",
         price: 35000,
         levelRequired: 8,
 
         stats: {
-            speed: 330,
+            speed: 310,
             acceleration: 82,
-            handling: 80
+            handling: 78,
+            braking: 75
         }
     },
 
-    {
-        id: "vortex",
-        brand: "Vortex",
-        name: "GT",
-        type: "Hyper",
-        class: "A",
-        emoji: "🏎️",
-        price: 75000,
-        levelRequired: 12,
-
-        stats: {
-            speed: 410,
-            acceleration: 91,
-            handling: 88
-        }
-    },
 
     {
-        id: "legend-x",
-        brand: "Legend",
+        id: "thunder",
+        brand: "Thunder",
         name: "X",
-        type: "Hypercar",
+        type: "Hyper",
         class: "S",
-        emoji: "🚀",
-        price: 150000,
-        levelRequired: 20,
+        emoji: "🚘",
+        price: 85000,
+        levelRequired: 15,
 
         stats: {
-            speed: 500,
-            acceleration: 100,
-            handling: 96
+            speed: 390,
+            acceleration: 94,
+            handling: 88,
+            braking: 90
         }
     }
 
 ];
 
 
-// =====================================================
-// CLASS COLORS
-// =====================================================
+/* =========================================================
+   CAR CLASSES
+========================================================= */
 
 const CAR_CLASSES = {
 
-    D: {
-        color: "#9ca3af"
-    },
-
     C: {
-        color: "#22c55e"
+        color: "#8d96a5"
     },
 
     B: {
@@ -186,116 +143,201 @@ const CAR_CLASSES = {
 };
 
 
-// =====================================================
-// MISSIONS
-// =====================================================
+/* =========================================================
+   MISSIONS
+========================================================= */
 
 const missions = [
 
     {
         id: "first_race",
+
         title: "FIRST RACE",
-        description: "დაასრულე შენი პირველი რბოლა.",
+
+        description:
+            "დაასრულე შენი პირველი რბოლა.",
+
         rewardMoney: 1000,
-        rewardXP: 300
+
+        rewardXP: 300,
+
+        completed: false
     },
+
 
     {
         id: "three_races",
+
         title: "RACE DRIVER",
-        description: "დაასრულე 3 რბოლა.",
+
+        description:
+            "დაასრულე 3 რბოლა.",
+
         rewardMoney: 2500,
-        rewardXP: 700
+
+        rewardXP: 700,
+
+        completed: false
     },
+
 
     {
         id: "first_win",
+
         title: "FIRST VICTORY",
-        description: "მოიგე შენი პირველი რბოლა.",
+
+        description:
+            "მოიგე შენი პირველი რბოლა.",
+
         rewardMoney: 3000,
-        rewardXP: 1000
+
+        rewardXP: 1000,
+
+        completed: false
     },
+
 
     {
         id: "level_five",
+
         title: "GETTING SERIOUS",
-        description: "მიაღწიე Level 5-ს.",
+
+        description:
+            "მიაღწიე Level 5-ს.",
+
         rewardMoney: 5000,
-        rewardXP: 1500
+
+        rewardXP: 1500,
+
+        completed: false
     }
 
 ];
 
 
-// =====================================================
-// INITIAL AUTH STATE
-// =====================================================
+/* =========================================================
+   LEADERBOARD
+========================================================= */
 
-onAuthStateChanged(
-    auth,
-    async user => {
+const leaderboardData = [
 
-        if (!user) {
-            return;
-        }
+    {
+        name: "ShadowRacer",
+        level: 42,
+        xp: 42100
+    },
 
-        currentUser = user;
+    {
+        name: "SpeedKing",
+        level: 38,
+        xp: 38600
+    },
 
-        await loadPlayer();
+    {
+        name: "DriftMaster",
+        level: 34,
+        xp: 34100
+    },
 
-        initializeGame();
+    {
+        name: "NightWolf",
+        level: 29,
+        xp: 29400
+    },
 
+    {
+        name: "TurboBoy",
+        level: 25,
+        xp: 25300
     }
-);
+
+];
 
 
-// =====================================================
-// LOAD PLAYER
-// =====================================================
+/* =========================================================
+   GAME STATE
+========================================================= */
 
-async function loadPlayer() {
+let currentRaceMode = null;
 
-    if (!currentUser) {
+let raceRunning = false;
+
+let raceFinished = false;
+
+let raceLoop = null;
+
+let raceStartTime = 0;
+
+let raceElapsed = 0;
+
+let raceDistance = 0;
+
+let playerSpeed = 0;
+
+let playerNitro = 100;
+
+let playerX = 50;
+
+let playerPosition = 4;
+
+let totalPlayers = 4;
+
+let opponents = [];
+
+
+/* =========================================================
+   UTILITY
+========================================================= */
+
+function getSelectedCar() {
+
+    return cars.find(
+        car =>
+            car.id === player.selectedCar
+    ) || cars[0];
+
+}
+
+
+function ownsCar(id) {
+
+    return player.ownedCars.includes(id);
+
+}
+
+
+function savePlayer() {
+
+    localStorage.setItem(
+        "streetLegendsPlayer",
+        JSON.stringify(player)
+    );
+
+}
+
+
+function loadPlayer() {
+
+    const saved =
+        localStorage.getItem(
+            "streetLegendsPlayer"
+        );
+
+    if (!saved) {
+
         return;
+
     }
 
     try {
 
-        const playerRef =
-            doc(
-                db,
-                "players",
-                currentUser.uid
-            );
-
-        const snapshot =
-            await getDoc(
-                playerRef
-            );
-
-        if (!snapshot.exists()) {
-
-            console.error(
-                "Player document does not exist."
-            );
-
-            return;
-        }
-
-        player = {
-            id: currentUser.uid,
-            ...snapshot.data()
-        };
-
-        selectedCarId =
-            player.selectedCar ||
-            player.cars?.[0] ||
-            "street-runner";
+        player =
+            JSON.parse(saved);
 
     } catch (error) {
 
         console.error(
-            "Player loading error:",
+            "Player data error:",
             error
         );
 
@@ -304,38 +346,197 @@ async function loadPlayer() {
 }
 
 
-// =====================================================
-// INITIALIZE GAME
-// =====================================================
+/* =========================================================
+   LEVEL SYSTEM
+========================================================= */
 
-function initializeGame() {
+function xpNeededForLevel(level) {
 
-    if (!player) {
-        return;
-    }
-
-    updatePlayerUI();
-
-    renderCars();
-
-    renderGarage();
-
-    renderMissions();
-
-    renderShop();
-
-    renderLeaderboard();
-
-    showScreen(
-        "homeScreen"
-    );
+    return level * 1000;
 
 }
 
 
-// =====================================================
-// SCREEN SYSTEM
-// =====================================================
+function checkLevelUp() {
+
+    let needed =
+        xpNeededForLevel(
+            player.level
+        );
+
+
+    while (
+        player.xp >= needed
+    ) {
+
+        player.xp -= needed;
+
+        player.level++;
+
+        needed =
+            xpNeededForLevel(
+                player.level
+            );
+
+
+        showNotification(
+            `🎉 LEVEL ${player.level}!`
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PLAYER UI
+========================================================= */
+
+function updatePlayerUI() {
+
+    const username =
+        document.getElementById(
+            "gameUsername"
+        );
+
+    const money =
+        document.getElementById(
+            "gameMoney"
+        );
+
+    const level =
+        document.getElementById(
+            "gameLevel"
+        );
+
+
+    if (username) {
+
+        username.textContent =
+            player.name;
+
+    }
+
+
+    if (money) {
+
+        money.textContent =
+            player.money.toLocaleString();
+
+    }
+
+
+    if (level) {
+
+        level.textContent =
+            player.level;
+
+    }
+
+
+    const homeWins =
+        document.getElementById(
+            "homeWins"
+        );
+
+    const homeCars =
+        document.getElementById(
+            "homeCars"
+        );
+
+    const homeSpeed =
+        document.getElementById(
+            "homeSpeed"
+        );
+
+
+    if (homeWins) {
+
+        homeWins.textContent =
+            player.wins;
+
+    }
+
+
+    if (homeCars) {
+
+        homeCars.textContent =
+            player.ownedCars.length;
+
+    }
+
+
+    if (homeSpeed) {
+
+        homeSpeed.textContent =
+            Math.round(
+                player.bestSpeed
+            );
+
+    }
+
+
+    const profileName =
+        document.getElementById(
+            "profileUsername"
+        );
+
+    const profileLevel =
+        document.getElementById(
+            "profileLevel"
+        );
+
+    const profileWins =
+        document.getElementById(
+            "profileWins"
+        );
+
+    const profileCars =
+        document.getElementById(
+            "profileCars"
+        );
+
+
+    if (profileName) {
+
+        profileName.textContent =
+            player.name;
+
+    }
+
+
+    if (profileLevel) {
+
+        profileLevel.textContent =
+            player.level;
+
+    }
+
+
+    if (profileWins) {
+
+        profileWins.textContent =
+            player.wins;
+
+    }
+
+
+    if (profileCars) {
+
+        profileCars.textContent =
+            player.ownedCars.length;
+
+    }
+
+
+    savePlayer();
+
+}
+
+
+/* =========================================================
+   SCREEN SYSTEM
+========================================================= */
 
 function showScreen(screenId) {
 
@@ -343,6 +544,7 @@ function showScreen(screenId) {
         document.querySelectorAll(
             ".screen"
         );
+
 
     screens.forEach(
         screen => {
@@ -354,10 +556,12 @@ function showScreen(screenId) {
         }
     );
 
+
     const target =
         document.getElementById(
             screenId
         );
+
 
     if (target) {
 
@@ -367,16 +571,77 @@ function showScreen(screenId) {
 
     }
 
+
     updateNavigation(
         screenId
     );
 
+
+    if (
+        screenId ===
+        "garageScreen"
+    ) {
+
+        renderGarage();
+
+    }
+
+
+    if (
+        screenId ===
+        "carsScreen"
+    ) {
+
+        renderCars();
+
+    }
+
+
+    if (
+        screenId ===
+        "missionsScreen"
+    ) {
+
+        renderMissions();
+
+    }
+
+
+    if (
+        screenId ===
+        "shopScreen"
+    ) {
+
+        renderShop();
+
+    }
+
+
+    if (
+        screenId ===
+        "leaderboardScreen"
+    ) {
+
+        renderLeaderboard();
+
+    }
+
+
+    if (
+        screenId ===
+        "profileScreen"
+    ) {
+
+        updatePlayerUI();
+
+    }
+
 }
 
 
-// =====================================================
-// NAVIGATION
-// =====================================================
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function updateNavigation(screenId) {
 
@@ -385,12 +650,20 @@ function updateNavigation(screenId) {
             ".nav-button"
         );
 
+
     buttons.forEach(
         button => {
 
             button.classList.remove(
                 "active"
             );
+
+        }
+    );
+
+
+    buttons.forEach(
+        button => {
 
             if (
                 button.dataset.screen ===
@@ -409,175 +682,226 @@ function updateNavigation(screenId) {
 }
 
 
-// =====================================================
-// NAV BUTTON CLICK
-// =====================================================
+/* =========================================================
+   GARAGE
+========================================================= */
 
-document.addEventListener(
-    "click",
-    event => {
+function renderGarage() {
 
-        const button =
-            event.target.closest(
-                ".nav-button"
+    const grid =
+        document.getElementById(
+            "garageGrid"
+        );
+
+
+    if (!grid) {
+
+        return;
+
+    }
+
+
+    grid.innerHTML = "";
+
+
+    player.ownedCars.forEach(
+        carId => {
+
+            const car =
+                cars.find(
+                    item =>
+                        item.id === carId
+                );
+
+
+            if (!car) {
+
+                return;
+
+            }
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "car-card";
+
+
+            const selected =
+                player.selectedCar ===
+                car.id;
+
+
+            card.innerHTML = `
+
+                <div class="car-image">
+
+                    <span>
+                        ${car.emoji}
+                    </span>
+
+                </div>
+
+                <div class="car-info">
+
+                    <h3>
+                        ${car.brand}
+                        ${car.name}
+                    </h3>
+
+                    <p>
+                        ${car.type}
+                    </p>
+
+                    <p>
+                        SPEED:
+                        ${car.stats.speed}
+                    </p>
+
+                    <p>
+                        ACCELERATION:
+                        ${car.stats.acceleration}
+                    </p>
+
+                    <button
+                        onclick="
+                            selectGarageCar(
+                                '${car.id}'
+                            )
+                        "
+                    >
+
+                        ${
+                            selected
+                            ? "✓ SELECTED"
+                            : "SELECT"
+                        }
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            grid.appendChild(
+                card
             );
 
-        if (!button) {
-            return;
         }
-
-        const screen =
-            button.dataset.screen;
-
-        if (!screen) {
-            return;
-        }
-
-        if (
-            screen === "raceScreen" &&
-            raceRunning
-        ) {
-
-            return;
-
-        }
-
-        showScreen(
-            screen
-        );
-
-    }
-);
-
-
-// =====================================================
-// UPDATE PLAYER UI
-// =====================================================
-
-function updatePlayerUI() {
-
-    if (!player) {
-        return;
-    }
-
-    const username =
-        player.username ||
-        "Player";
-
-    const money =
-        player.money ?? 0;
-
-    const level =
-        player.level ?? 1;
-
-    const wins =
-        player.wins ?? 0;
-
-    const speed =
-        player.bestSpeed ?? 0;
-
-    const carCount =
-        player.cars?.length || 1;
-
-
-    setText(
-        "gameUsername",
-        username
-    );
-
-    setText(
-        "gameMoney",
-        money.toLocaleString()
-    );
-
-    setText(
-        "gameLevel",
-        level
-    );
-
-    setText(
-        "homeWins",
-        wins
-    );
-
-    setText(
-        "homeCars",
-        carCount
-    );
-
-    setText(
-        "homeSpeed",
-        Math.round(speed)
-    );
-
-    setText(
-        "profileUsername",
-        username
-    );
-
-    setText(
-        "profileLevel",
-        level
-    );
-
-    setText(
-        "profileWins",
-        wins
-    );
-
-    setText(
-        "profileCars",
-        carCount
     );
 
 }
 
 
-// =====================================================
-// SET TEXT HELPER
-// =====================================================
+/* =========================================================
+   SELECT CAR
+========================================================= */
 
-function setText(
-    id,
-    value
+function selectGarageCar(carId) {
+
+    if (
+        !ownsCar(carId)
+    ) {
+
+        return;
+
+    }
+
+
+    player.selectedCar =
+        carId;
+
+
+    savePlayer();
+
+    updatePlayerUI();
+
+    renderGarage();
+
+    renderCars();
+
+
+    showNotification(
+        "🚗 მანქანა არჩეულია!"
+    );
+
+}
+
+
+/* =========================================================
+   CARS SHOP
+========================================================= */
+
+function createStatHTML(
+    name,
+    value,
+    max
 ) {
 
-    const element =
-        document.getElementById(
-            id
+    const percentage =
+        Math.min(
+            100,
+            (value / max) * 100
         );
 
-    if (element) {
 
-        element.textContent =
-            value;
+    return `
 
-    }
+        <div
+            style="
+                margin-top:10px;
+            "
+        >
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    font-size:12px;
+                "
+            >
+
+                <span>
+                    ${name}
+                </span>
+
+                <strong>
+                    ${value}
+                </strong>
+
+            </div>
+
+            <div
+                style="
+                    width:100%;
+                    height:6px;
+                    background:#202631;
+                    border-radius:5px;
+                    overflow:hidden;
+                "
+            >
+
+                <div
+                    style="
+                        width:${percentage}%;
+                        height:100%;
+                        background:#ff3b30;
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+    `;
 
 }
 
-
-// =====================================================
-// GET SELECTED CAR
-// =====================================================
-
-function getSelectedCar() {
-
-    return (
-        cars.find(
-            car =>
-                car.id ===
-                selectedCarId
-        ) ||
-        cars[0]
-    );
-
-}
-
-
-// =====================================================
-// RENDER CARS
-// =====================================================
 
 function renderCars() {
 
@@ -586,9 +910,13 @@ function renderCars() {
             "carsGrid"
         );
 
-    if (!grid || !player) {
+
+    if (!grid) {
+
         return;
+
     }
+
 
     grid.innerHTML = "";
 
@@ -597,13 +925,13 @@ function renderCars() {
         car => {
 
             const owned =
-                player.cars?.includes(
-                    car.id
-                );
+                ownsCar(car.id);
+
 
             const locked =
                 player.level <
                 car.levelRequired;
+
 
             const classInfo =
                 CAR_CLASSES[
@@ -615,6 +943,7 @@ function renderCars() {
                 document.createElement(
                     "div"
                 );
+
 
             card.className =
                 "car-card";
@@ -640,50 +969,37 @@ function renderCars() {
 
                 <div class="car-info">
 
-                    <div
+                    <h3>
+                        ${car.brand}
+                        ${car.name}
+                    </h3>
+
+                    <div>
+                        ${car.type}
+                    </div>
+
+                    <strong
                         style="
-                            display:flex;
-                            justify-content:space-between;
-                            align-items:start;
+                            color:${classInfo.color};
                         "
                     >
-
-                        <div>
-
-                            <h3>
-                                ${car.brand}
-                                ${car.name}
-                            </h3>
-
-                            <p>
-                                ${car.type}
-                            </p>
-
-                        </div>
-
-                        <strong
-                            style="
-                                color:
-                                ${classInfo.color};
-                            "
-                        >
-                            ${car.class}
-                        </strong>
-
-                    </div>
+                        CLASS ${car.class}
+                    </strong>
 
 
                     ${createStatHTML(
                         "SPEED",
                         car.stats.speed,
-                        500
+                        400
                     )}
+
 
                     ${createStatHTML(
                         "ACCELERATION",
                         car.stats.acceleration,
                         100
                     )}
+
 
                     ${createStatHTML(
                         "HANDLING",
@@ -694,49 +1010,22 @@ function renderCars() {
 
                     <div
                         style="
-                            margin-top:18px;
-                            display:flex;
-                            justify-content:space-between;
-                            align-items:center;
+                            margin-top:15px;
                         "
                     >
-
-                        <strong
-                            style="
-                                color:#ffd700;
-                            "
-                        >
-
-                            ${
-                                owned
-                                ? "✓ OWNED"
-                                : locked
-                                ? "🔒 LV " +
-                                  car.levelRequired
-                                : "$" +
-                                  car.price.toLocaleString()
-                            }
-
-                        </strong>
-
 
                         ${
                             owned
 
                             ? `
                                 <button
-                                    class="secondary-btn"
                                     onclick="
                                         selectGarageCar(
                                             '${car.id}'
                                         )
                                     "
                                 >
-                                    ${
-                                        selectedCarId === car.id
-                                        ? "SELECTED"
-                                        : "SELECT"
-                                    }
+                                    SELECT
                                 </button>
                             `
 
@@ -744,16 +1033,15 @@ function renderCars() {
 
                             ? `
                                 <button
-                                    class="secondary-btn"
                                     disabled
                                 >
-                                    LOCKED
+                                    🔒 LEVEL
+                                    ${car.levelRequired}
                                 </button>
                             `
 
                             : `
                                 <button
-                                    class="primary-btn"
                                     onclick="
                                         buyCar(
                                             '${car.id}'
@@ -761,6 +1049,7 @@ function renderCars() {
                                     "
                                 >
                                     BUY
+                                    $${car.price.toLocaleString()}
                                 </button>
                             `
                         }
@@ -771,6 +1060,7 @@ function renderCars() {
 
             `;
 
+
             grid.appendChild(
                 card
             );
@@ -781,90 +1071,11 @@ function renderCars() {
 }
 
 
-// =====================================================
-// STAT HTML
-// =====================================================
+/* =========================================================
+   BUY CAR
+========================================================= */
 
-function createStatHTML(
-    name,
-    value,
-    max
-) {
-
-    const percentage =
-        Math.min(
-            100,
-            (value / max) * 100
-        );
-
-    return `
-
-        <div
-            style="
-                margin-top:10px;
-            "
-        >
-
-            <div
-                style="
-                    display:flex;
-                    justify-content:space-between;
-                    font-size:10px;
-                    color:#8d96a5;
-                "
-            >
-
-                <span>
-                    ${name}
-                </span>
-
-                <span>
-                    ${value}
-                </span>
-
-            </div>
-
-
-            <div
-                style="
-                    width:100%;
-                    height:5px;
-                    margin-top:4px;
-                    background:#242a33;
-                    border-radius:10px;
-                    overflow:hidden;
-                "
-            >
-
-                <div
-                    style="
-                        width:${percentage}%;
-                        height:100%;
-                        background:#ff3b30;
-                    "
-                ></div>
-
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-// =====================================================
-// BUY CAR
-// =====================================================
-
-window.buyCar =
-async function(
-    carId
-) {
-
-    if (!player) {
-        return;
-    }
+function buyCar(carId) {
 
     const car =
         cars.find(
@@ -872,22 +1083,22 @@ async function(
                 item.id === carId
         );
 
+
     if (!car) {
+
         return;
+
     }
+
 
     if (
-        player.cars?.includes(
-            carId
-        )
+        ownsCar(car.id)
     ) {
 
-        showNotification(
-            "ეს მანქანა უკვე გაქვს."
-        );
-
         return;
+
     }
+
 
     if (
         player.level <
@@ -895,49 +1106,38 @@ async function(
     ) {
 
         showNotification(
-            `საჭიროა Level ${car.levelRequired}.`
+            `🔒 საჭიროა Level ${car.levelRequired}`
         );
 
         return;
+
     }
 
+
     if (
-        (player.money ?? 0) <
+        player.money <
         car.price
     ) {
 
         showNotification(
-            "არ გაქვს საკმარისი ფული."
+            "💰 საკმარისი ფული არ გაქვს!"
         );
 
         return;
+
     }
-
-
-    const newCars =
-        [
-            ...(player.cars || []),
-            carId
-        ];
 
 
     player.money -=
         car.price;
 
-    player.cars =
-        newCars;
+
+    player.ownedCars.push(
+        car.id
+    );
 
 
-    await savePlayer({
-
-        money:
-            player.money,
-
-        cars:
-            player.cars
-
-    });
-
+    savePlayer();
 
     updatePlayerUI();
 
@@ -945,207 +1145,17 @@ async function(
 
     renderGarage();
 
+
     showNotification(
         `🚗 ${car.brand} ${car.name} იყიდე!`
-    );
-
-};
-
-
-// =====================================================
-// SELECT CAR
-// =====================================================
-
-window.selectGarageCar =
-async function(
-    carId
-) {
-
-    if (!player) {
-        return;
-    }
-
-    if (
-        !player.cars?.includes(
-            carId
-        )
-    ) {
-
-        return;
-    }
-
-    selectedCarId =
-        carId;
-
-    player.selectedCar =
-        carId;
-
-
-    await savePlayer({
-
-        selectedCar:
-            carId
-
-    });
-
-
-    renderCars();
-
-    renderGarage();
-
-    showNotification(
-        "🏎️ მანქანა არჩეულია!"
-    );
-
-};
-
-
-// =====================================================
-// GARAGE
-// =====================================================
-
-function renderGarage() {
-
-    const grid =
-        document.getElementById(
-            "garageGrid"
-        );
-
-    if (!grid || !player) {
-        return;
-    }
-
-    grid.innerHTML = "";
-
-
-    const ownedCars =
-        cars.filter(
-            car =>
-                player.cars?.includes(
-                    car.id
-                )
-        );
-
-
-    if (
-        ownedCars.length === 0
-    ) {
-
-        grid.innerHTML = `
-            <div class="car-card">
-                <div class="car-info">
-                    ჯერ არცერთი მანქანა არ გაქვს.
-                </div>
-            </div>
-        `;
-
-        return;
-    }
-
-
-    ownedCars.forEach(
-        car => {
-
-            const selected =
-                selectedCarId ===
-                car.id;
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "car-card";
-
-
-            card.innerHTML = `
-
-                <div
-                    class="car-image"
-                >
-
-                    <span>
-                        ${car.emoji}
-                    </span>
-
-                </div>
-
-
-                <div class="car-info">
-
-                    <h3>
-                        ${car.brand}
-                        ${car.name}
-                    </h3>
-
-                    <p>
-                        ${car.type}
-                    </p>
-
-
-                    <div
-                        style="
-                            margin-top:15px;
-                            color:
-                            ${
-                                selected
-                                ? "#22c55e"
-                                : "#8d96a5"
-                            };
-                            font-weight:bold;
-                        "
-                    >
-
-                        ${
-                            selected
-                            ? "✓ SELECTED"
-                            : "OWNED"
-                        }
-
-                    </div>
-
-
-                    ${
-                        !selected
-                        ? `
-                            <button
-                                class="primary-btn"
-                                style="
-                                    margin-top:12px;
-                                    width:100%;
-                                "
-                                onclick="
-                                    selectGarageCar(
-                                        '${car.id}'
-                                    )
-                                "
-                            >
-                                SELECT
-                            </button>
-                        `
-                        : ""
-                    }
-
-                </div>
-
-            `;
-
-
-            grid.appendChild(
-                card
-            );
-
-        }
     );
 
 }
 
 
-// =====================================================
-// MISSIONS
-// =====================================================
+/* =========================================================
+   MISSIONS
+========================================================= */
 
 function renderMissions() {
 
@@ -1154,9 +1164,13 @@ function renderMissions() {
             "missionsList"
         );
 
+
     if (!container) {
+
         return;
+
     }
+
 
     container.innerHTML = "";
 
@@ -1164,16 +1178,11 @@ function renderMissions() {
     missions.forEach(
         mission => {
 
-            const completed =
-                isMissionCompleted(
-                    mission.id
-                );
-
-
             const card =
                 document.createElement(
                     "div"
                 );
+
 
             card.className =
                 "mission-card";
@@ -1187,58 +1196,27 @@ function renderMissions() {
                         🎯 ${mission.title}
                     </strong>
 
-                    <small
-                        style="
-                            display:block;
-                            margin-top:7px;
-                            color:#8d96a5;
-                        "
-                    >
+                    <small>
                         ${mission.description}
                     </small>
 
                 </div>
 
 
-                <div
-                    style="
-                        text-align:right;
-                    "
-                >
+                <div>
 
-                    ${
-                        completed
+                    <div
+                        style="
+                            color:#ffd700;
+                            font-weight:bold;
+                        "
+                    >
+                        +$${mission.rewardMoney}
+                    </div>
 
-                        ? `
-                            <strong
-                                style="
-                                    color:#22c55e;
-                                "
-                            >
-                                ✓ COMPLETED
-                            </strong>
-                        `
-
-                        : `
-                            <div
-                                style="
-                                    color:#ffd700;
-                                    font-weight:bold;
-                                "
-                            >
-                                +$${mission.rewardMoney.toLocaleString()}
-                            </div>
-
-                            <div
-                                style="
-                                    color:#8d96a5;
-                                    font-size:11px;
-                                "
-                            >
-                                +${mission.rewardXP} XP
-                            </div>
-                        `
-                    }
+                    <div>
+                        +${mission.rewardXP} XP
+                    </div>
 
                 </div>
 
@@ -1255,62 +1233,9 @@ function renderMissions() {
 }
 
 
-// =====================================================
-// MISSION CHECK
-// =====================================================
-
-function isMissionCompleted(
-    id
-) {
-
-    if (!player) {
-        return false;
-    }
-
-    if (id === "first_race") {
-
-        return (
-            (player.races || 0) >=
-            1
-        );
-
-    }
-
-    if (id === "three_races") {
-
-        return (
-            (player.races || 0) >=
-            3
-        );
-
-    }
-
-    if (id === "first_win") {
-
-        return (
-            (player.wins || 0) >=
-            1
-        );
-
-    }
-
-    if (id === "level_five") {
-
-        return (
-            (player.level || 1) >=
-            5
-        );
-
-    }
-
-    return false;
-
-}
-
-
-// =====================================================
-// SHOP
-// =====================================================
+/* =========================================================
+   SHOP
+========================================================= */
 
 function renderShop() {
 
@@ -1319,16 +1244,20 @@ function renderShop() {
             "shopGrid"
         );
 
+
     if (!grid) {
+
         return;
+
     }
+
 
     const items = [
 
         {
             name: "Engine Boost",
             description:
-                "დროებით ზრდის სიჩქარეს.",
+                "ზრდის მანქანის სიჩქარეს.",
             price: 1000,
             icon: "🚀"
         },
@@ -1336,7 +1265,7 @@ function renderShop() {
         {
             name: "Nitro Pack",
             description:
-                "გაძლევს დამატებით Nitro-ს.",
+                "ამატებს Nitro-ს.",
             price: 750,
             icon: "⚡"
         },
@@ -1371,6 +1300,7 @@ function renderShop() {
                     "div"
                 );
 
+
             card.className =
                 "shop-card";
 
@@ -1389,12 +1319,7 @@ function renderShop() {
                     ${item.name}
                 </h3>
 
-                <p
-                    style="
-                        color:#8d96a5;
-                        margin-top:8px;
-                    "
-                >
+                <p>
                     ${item.description}
                 </p>
 
@@ -1422,30 +1347,22 @@ function renderShop() {
 }
 
 
-// =====================================================
-// SHOP PURCHASE
-// =====================================================
-
-window.buyShopItem =
-async function(
+function buyShopItem(
     name,
     price
 ) {
 
-    if (!player) {
-        return;
-    }
-
     if (
-        (player.money ?? 0) <
+        player.money <
         price
     ) {
 
         showNotification(
-            "არ გაქვს საკმარისი ფული."
+            "💰 საკმარისი ფული არ გაქვს!"
         );
 
         return;
+
     }
 
 
@@ -1453,13 +1370,7 @@ async function(
         price;
 
 
-    await savePlayer({
-
-        money:
-            player.money
-
-    });
-
+    savePlayer();
 
     updatePlayerUI();
 
@@ -1468,108 +1379,39 @@ async function(
         `🛒 ${name} იყიდე!`
     );
 
-};
+}
 
 
-// =====================================================
-// LEADERBOARD
-// =====================================================
+/* =========================================================
+   LEADERBOARD
+========================================================= */
 
-async function renderLeaderboard() {
+function renderLeaderboard() {
 
     const container =
         document.getElementById(
             "leaderboardList"
         );
 
+
     if (!container) {
+
         return;
-    }
-
-
-    container.innerHTML = `
-        <div
-            style="
-                padding:20px;
-                text-align:center;
-                color:#8d96a5;
-            "
-        >
-            Leaderboard იტვირთება...
-        </div>
-    `;
-
-
-    let players = [];
-
-
-    try {
-
-        const playersRef =
-            collection(
-                db,
-                "players"
-            );
-
-
-        const leaderboardQuery =
-            query(
-                playersRef,
-                orderBy(
-                    "xp",
-                    "desc"
-                ),
-                limit(50)
-            );
-
-
-        const snapshot =
-            await getDocs(
-                leaderboardQuery
-            );
-
-
-        snapshot.forEach(
-            docSnapshot => {
-
-                players.push({
-                    id:
-                        docSnapshot.id,
-
-                    ...docSnapshot.data()
-
-                });
-
-            }
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Leaderboard error:",
-            error
-        );
 
     }
 
 
-    // Add current player if missing
+    const players = [
 
-    if (
-        player &&
-        !players.some(
-            item =>
-                item.id ===
-                player.id
-        )
-    ) {
+        ...leaderboardData,
 
-        players.push(
-            player
-        );
+        {
+            name: player.name,
+            level: player.level,
+            xp: player.xp
+        }
 
-    }
+    ];
 
 
     players.sort(
@@ -1577,877 +1419,73 @@ async function renderLeaderboard() {
             a,
             b
         ) =>
-            (b.xp || 0) -
-            (a.xp || 0)
+            b.xp - a.xp
     );
 
 
     container.innerHTML = "";
 
 
-    players
-        .slice(0, 50)
-        .forEach(
-            (
-                item,
-                index
-            ) => {
+    players.forEach(
+        (
+            item,
+            index
+        ) => {
 
-                const row =
-                    document.createElement(
-                        "div"
-                    );
-
-                row.className =
-                    "leaderboard-row";
-
-
-                const you =
-                    item.id ===
-                    currentUser?.uid;
-
-
-                row.innerHTML = `
-
-                    <span>
-
-                        ${
-                            index === 0
-                            ? "🥇"
-                            : index === 1
-                            ? "🥈"
-                            : index === 2
-                            ? "🥉"
-                            : index + 1
-                        }
-
-                    </span>
-
-
-                    <div>
-
-                        <strong
-                            style="
-                                ${
-                                    you
-                                    ? "color:#ff3b30;"
-                                    : ""
-                                }
-                            "
-                        >
-
-                            ${
-                                item.username ||
-                                "Player"
-                            }
-
-                            ${
-                                you
-                                ? " (YOU)"
-                                : ""
-                            }
-
-                        </strong>
-
-                    </div>
-
-
-                    <span>
-                        LV ${
-                            item.level ||
-                            1
-                        }
-                    </span>
-
-
-                    <strong>
-                        ${
-                            (
-                                item.xp ||
-                                0
-                            ).toLocaleString()
-                        }
-                    </strong>
-
-                `;
-
-
-                container.appendChild(
-                    row
+            const row =
+                document.createElement(
+                    "div"
                 );
 
-            }
-        );
 
-}
+            row.className =
+                "leaderboard-row";
 
 
-// =====================================================
-// RACE
-// =====================================================
+            row.innerHTML = `
 
-const startRaceButton =
-    document.getElementById(
-        "startRaceButton"
-    );
+                <span>
+                    ${
+                        index === 0
+                        ? "🥇"
+                        : index === 1
+                        ? "🥈"
+                        : index === 2
+                        ? "🥉"
+                        : index + 1
+                    }
+                </span>
 
+                <strong>
+                    ${item.name}
+                </strong>
 
-if (startRaceButton) {
+                <span>
+                    LVL ${item.level}
+                </span>
 
-    startRaceButton.addEventListener(
-        "click",
-        startRace
-    );
+                <strong>
+                    ${item.xp.toLocaleString()} XP
+                </strong>
 
-}
+            `;
 
 
-// =====================================================
-// START RACE
-// =====================================================
-
-function startRace() {
-
-    if (raceRunning) {
-        return;
-    }
-
-    showScreen(
-        "raceScreen"
-    );
-
-
-    raceRunning =
-        false;
-
-    raceFinished =
-        false;
-
-    raceSpeed =
-        0;
-
-    raceDistance =
-        0;
-
-    racePosition =
-        50;
-
-    nitro =
-        100;
-
-
-    const car =
-        getSelectedCar();
-
-
-    const playerCar =
-        document.getElementById(
-            "playerCar"
-        );
-
-    if (playerCar) {
-
-        playerCar.textContent =
-            car.emoji;
-
-        playerCar.style.left =
-            "50%";
-
-        playerCar.style.bottom =
-            "12%";
-
-    }
-
-
-    const countdown =
-        document.getElementById(
-            "raceCountdown"
-        );
-
-
-    if (!countdown) {
-        return;
-    }
-
-
-    let number = 3;
-
-
-    countdown.textContent =
-        number;
-
-
-    const countdownInterval =
-        setInterval(
-            () => {
-
-                number--;
-
-
-                if (number > 0) {
-
-                    countdown.textContent =
-                        number;
-
-                } else {
-
-                    countdown.textContent =
-                        "GO!";
-
-
-                    setTimeout(
-                        () => {
-
-                            countdown.textContent =
-                                "";
-
-                            clearInterval(
-                                countdownInterval
-                            );
-
-                            beginRace();
-
-                        },
-                        500
-                    );
-
-                }
-
-            },
-            900
-        );
-
-}
-
-
-// =====================================================
-// BEGIN RACE
-// =====================================================
-
-function beginRace() {
-
-    raceRunning =
-        true;
-
-    raceFinished =
-        false;
-
-
-    raceInterval =
-        setInterval(
-            updateRace,
-            50
-        );
-
-}
-
-
-// =====================================================
-// UPDATE RACE
-// =====================================================
-
-function updateRace() {
-
-    if (!raceRunning) {
-        return;
-    }
-
-
-    const car =
-        getSelectedCar();
-
-
-    const acceleration =
-        car.stats.acceleration /
-        100;
-
-
-    const maxSpeed =
-        car.stats.speed;
-
-
-    if (raceSpeed > 0) {
-
-        raceSpeed -=
-            0.35;
-
-    }
-
-
-    raceSpeed =
-        Math.max(
-            0,
-            Math.min(
-                maxSpeed,
-                raceSpeed
-            )
-        );
-
-
-    raceDistance +=
-        raceSpeed *
-        0.003;
-
-
-    const road =
-        document.getElementById(
-            "raceRoad"
-        );
-
-
-    const playerCar =
-        document.getElementById(
-            "playerCar"
-        );
-
-
-    if (road) {
-
-        const movement =
-            (raceDistance % 100);
-
-        road.style.backgroundPositionY =
-            movement * 5 + "px";
-
-    }
-
-
-    if (playerCar) {
-
-        playerCar.style.left =
-            racePosition + "%";
-
-    }
-
-
-    if (
-        raceDistance >=
-        100
-    ) {
-
-        finishRace();
-
-    }
-
-}
-
-
-// =====================================================
-// ACCELERATE
-// =====================================================
-
-function accelerate() {
-
-    if (!raceRunning) {
-        return;
-    }
-
-
-    const car =
-        getSelectedCar();
-
-
-    raceSpeed +=
-        3 +
-        car.stats.acceleration /
-        25;
-
-
-    raceSpeed =
-        Math.min(
-            car.stats.speed,
-            raceSpeed
-        );
-
-}
-
-
-// =====================================================
-// BRAKE
-// =====================================================
-
-function brake() {
-
-    if (!raceRunning) {
-        return;
-    }
-
-
-    raceSpeed -=
-        8;
-
-
-    raceSpeed =
-        Math.max(
-            0,
-            raceSpeed
-        );
-
-}
-
-
-// =====================================================
-// NITRO
-// =====================================================
-
-function useNitro() {
-
-    if (
-        !raceRunning ||
-        nitro <= 0
-    ) {
-
-        return;
-    }
-
-
-    raceSpeed +=
-        20;
-
-
-    nitro -=
-        10;
-
-
-    raceSpeed =
-        Math.min(
-            getSelectedCar().stats.speed,
-            raceSpeed
-        );
-
-
-    showNotification(
-        `⚡ NITRO ${nitro}%`
-    );
-
-}
-
-
-// =====================================================
-// LEFT / RIGHT
-// =====================================================
-
-function moveLeft() {
-
-    if (!raceRunning) {
-        return;
-    }
-
-    racePosition -=
-        5;
-
-    racePosition =
-        Math.max(
-            15,
-            racePosition
-        );
-
-}
-
-
-function moveRight() {
-
-    if (!raceRunning) {
-        return;
-    }
-
-    racePosition +=
-        5;
-
-    racePosition =
-        Math.min(
-            85,
-            racePosition
-        );
-
-}
-
-
-// =====================================================
-// RACE BUTTONS
-// =====================================================
-
-const accelerateButton =
-    document.getElementById(
-        "accelerateButton"
-    );
-
-const brakeButton =
-    document.getElementById(
-        "brakeButton"
-    );
-
-const nitroButton =
-    document.getElementById(
-        "nitroButton"
-    );
-
-const leftButton =
-    document.getElementById(
-        "leftButton"
-    );
-
-const rightButton =
-    document.getElementById(
-        "rightButton"
-    );
-
-
-if (accelerateButton) {
-
-    accelerateButton.addEventListener(
-        "click",
-        accelerate
-    );
-
-}
-
-
-if (brakeButton) {
-
-    brakeButton.addEventListener(
-        "click",
-        brake
-    );
-
-}
-
-
-if (nitroButton) {
-
-    nitroButton.addEventListener(
-        "click",
-        useNitro
-    );
-
-}
-
-
-if (leftButton) {
-
-    leftButton.addEventListener(
-        "click",
-        moveLeft
-    );
-
-}
-
-
-if (rightButton) {
-
-    rightButton.addEventListener(
-        "click",
-        moveRight
-    );
-
-}
-
-
-// =====================================================
-// KEYBOARD CONTROLS
-// =====================================================
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (!raceRunning) {
-            return;
-        }
-
-
-        if (
-            event.key ===
-            "ArrowUp"
-        ) {
-
-            accelerate();
-
-        }
-
-
-        if (
-            event.key ===
-            "ArrowDown"
-        ) {
-
-            brake();
-
-        }
-
-
-        if (
-            event.key ===
-            "ArrowLeft"
-        ) {
-
-            moveLeft();
-
-        }
-
-
-        if (
-            event.key ===
-            "ArrowRight"
-        ) {
-
-            moveRight();
-
-        }
-
-
-        if (
-            event.code ===
-            "Space"
-        ) {
-
-            event.preventDefault();
-
-            useNitro();
-
-        }
-
-    }
-);
-
-
-// =====================================================
-// FINISH RACE
-// =====================================================
-
-async function finishRace() {
-
-    if (
-        raceFinished
-    ) {
-
-        return;
-
-    }
-
-
-    raceFinished =
-        true;
-
-    raceRunning =
-        false;
-
-
-    clearInterval(
-        raceInterval
-    );
-
-
-    const won =
-        Math.random() >
-        0.25;
-
-
-    const reward =
-        won
-        ? 2500
-        : 750;
-
-
-    const xpReward =
-        won
-        ? 500
-        : 150;
-
-
-    player.races =
-        (player.races || 0) +
-        1;
-
-
-    if (won) {
-
-        player.wins =
-            (player.wins || 0) +
-            1;
-
-    } else {
-
-        player.losses =
-            (player.losses || 0) +
-            1;
-
-    }
-
-
-    player.money =
-        (player.money || 0) +
-        reward;
-
-
-    player.xp =
-        (player.xp || 0) +
-        xpReward;
-
-
-    const speed =
-        Math.round(
-            raceSpeed
-        );
-
-
-    if (
-        speed >
-        (player.bestSpeed || 0)
-    ) {
-
-        player.bestSpeed =
-            speed;
-
-    }
-
-
-    calculateLevel();
-
-
-    await savePlayer({
-
-        races:
-            player.races,
-
-        wins:
-            player.wins,
-
-        losses:
-            player.losses,
-
-        money:
-            player.money,
-
-        xp:
-            player.xp,
-
-        level:
-            player.level,
-
-        bestSpeed:
-            player.bestSpeed
-
-    });
-
-
-    updatePlayerUI();
-
-    renderMissions();
-
-    renderLeaderboard();
-
-
-    showNotification(
-
-        won
-
-        ? `🏆 VICTORY! +$${reward} +${xpReward} XP`
-
-        : `🏁 FINISHED! +$${reward} +${xpReward} XP`
-
-    );
-
-
-    setTimeout(
-        () => {
-
-            showScreen(
-                "homeScreen"
+            container.appendChild(
+                row
             );
 
-        },
-        1800
+        }
     );
 
 }
 
 
-// =====================================================
-// LEVEL SYSTEM
-// =====================================================
+/* =========================================================
+   NOTIFICATION
+========================================================= */
 
-function calculateLevel() {
-
-    if (!player) {
-        return;
-    }
-
-
-    const xp =
-        player.xp || 0;
-
-
-    const newLevel =
-        Math.max(
-            1,
-            Math.floor(
-                xp / 1000
-            ) + 1
-        );
-
-
-    if (
-        newLevel >
-        (player.level || 1)
-    ) {
-
-        player.level =
-            newLevel;
-
-
-        showNotification(
-            `⭐ LEVEL UP! Level ${newLevel}`
-        );
-
-    }
-
-}
-
-
-// =====================================================
-// SAVE PLAYER
-// =====================================================
-
-async function savePlayer(
-    data
-) {
-
-    if (!currentUser) {
-        return;
-    }
-
-
-    try {
-
-        await updateDoc(
-            doc(
-                db,
-                "players",
-                currentUser.uid
-            ),
-            data
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Save player error:",
-            error
-        );
-
-    }
-
-}
-
-
-// =====================================================
-// NOTIFICATION
-// =====================================================
-
-function showNotification(
-    message
-) {
+function showNotification(message) {
 
     let notification =
         document.getElementById(
@@ -2462,6 +1500,7 @@ function showNotification(
                 "div"
             );
 
+
         notification.id =
             "gameNotification";
 
@@ -2469,39 +1508,32 @@ function showNotification(
         notification.style.position =
             "fixed";
 
-        notification.style.left =
-            "50%";
-
         notification.style.top =
             "90px";
+
+        notification.style.left =
+            "50%";
 
         notification.style.transform =
             "translateX(-50%)";
 
         notification.style.zIndex =
-            "9999";
+            "99999";
 
         notification.style.padding =
-            "14px 22px";
+            "14px 24px";
 
         notification.style.borderRadius =
-            "12px";
+            "10px";
 
         notification.style.background =
-            "#171c25";
-
-        notification.style.border =
-            "1px solid #394352";
+            "#151922";
 
         notification.style.color =
             "white";
 
-        notification.style.fontWeight =
-            "bold";
-
-        notification.style.boxShadow =
-            "0 15px 40px rgba(0,0,0,.5)";
-
+        notification.style.border =
+            "1px solid #ff3b30";
 
         document.body.appendChild(
             notification
@@ -2519,11 +1551,11 @@ function showNotification(
 
 
     clearTimeout(
-        notification._timer
+        notification.timer
     );
 
 
-    notification._timer =
+    notification.timer =
         setTimeout(
             () => {
 
@@ -2537,42 +1569,1344 @@ function showNotification(
 }
 
 
-// =====================================================
-// LOGOUT
-// =====================================================
+/* =========================================================
+   RACE MODE SELECTION
+========================================================= */
 
-const logoutButton =
-    document.getElementById(
-        "logoutButton"
+function setupRaceModes() {
+
+    const buttons =
+        document.querySelectorAll(
+            ".race-mode-button"
+        );
+
+
+    buttons.forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const mode =
+                        button.dataset.raceMode;
+
+
+                    startRace(
+                        mode
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   START RACE
+========================================================= */
+
+function startRace(mode) {
+
+    if (raceRunning) {
+
+        return;
+
+    }
+
+
+    currentRaceMode =
+        mode;
+
+
+    raceFinished =
+        false;
+
+
+    raceDistance =
+        0;
+
+
+    playerSpeed =
+        0;
+
+
+    playerNitro =
+        100;
+
+
+    playerX =
+        50;
+
+
+    playerPosition =
+        totalPlayers;
+
+
+    const activeRace =
+        document.getElementById(
+            "activeRace"
+        );
+
+
+    if (!activeRace) {
+
+        return;
+
+    }
+
+
+    activeRace.classList.remove(
+        "hidden"
     );
 
 
-if (logoutButton) {
+    const modeTitle =
+        document.getElementById(
+            "raceModeTitle"
+        );
 
-    logoutButton.addEventListener(
-        "click",
-        async () => {
 
-            try {
+    const titles = {
 
-                const {
-                    signOut
-                } =
-                    await import(
-                        "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js"
+        quick:
+            "QUICK RACE",
+
+        time:
+            "TIME TRIAL",
+
+        career:
+            "CAREER",
+
+        drift:
+            "DRIFT"
+
+    };
+
+
+    if (modeTitle) {
+
+        modeTitle.textContent =
+            titles[mode] ||
+            "RACE";
+
+    }
+
+
+    const result =
+        document.getElementById(
+            "raceResult"
+        );
+
+
+    if (result) {
+
+        result.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    createOpponents();
+
+    resetRaceVisuals();
+
+    showScreen(
+        "raceScreen"
+    );
+
+
+    countdownStart();
+
+}
+
+
+/* =========================================================
+   CREATE OPPONENTS
+========================================================= */
+
+function createOpponents() {
+
+    const container =
+        document.getElementById(
+            "raceOpponents"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    opponents = [];
+
+
+    const opponentNames = [
+
+        "Shadow",
+
+        "SpeedKing",
+
+        "NightWolf"
+
+    ];
+
+
+    const opponentCars = [
+
+        "🏎️",
+
+        "🚘",
+
+        "🏁"
+
+    ];
+
+
+    for (
+        let i = 0;
+        i < 3;
+        i++
+    ) {
+
+        const opponent = {
+
+            name:
+                opponentNames[i],
+
+            progress: 0,
+
+            speed:
+                0.18 +
+                Math.random() * 0.06,
+
+            element:
+                document.createElement(
+                    "div"
+                )
+
+        };
+
+
+        opponent.element.className =
+            "race-opponent";
+
+
+        opponent.element.textContent =
+            opponentCars[i];
+
+
+        opponent.element.style.position =
+            "absolute";
+
+
+        opponent.element.style.left =
+            `${25 + i * 25}%`;
+
+
+        opponent.element.style.bottom =
+            `${120 + i * 20}px`;
+
+
+        container.appendChild(
+            opponent.element
+        );
+
+
+        opponents.push(
+            opponent
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+function countdownStart() {
+
+    const countdown =
+        document.getElementById(
+            "raceCountdown"
+        );
+
+
+    if (!countdown) {
+
+        beginRace();
+
+        return;
+
+    }
+
+
+    let count =
+        3;
+
+
+    countdown.textContent =
+        count;
+
+
+    const timer =
+        setInterval(
+            () => {
+
+                count--;
+
+
+                if (
+                    count > 0
+                ) {
+
+                    countdown.textContent =
+                        count;
+
+                } else {
+
+                    countdown.textContent =
+                        "GO!";
+
+
+                    clearInterval(
+                        timer
                     );
 
 
-                await signOut(
-                    auth
-                );
+                    setTimeout(
+                        () => {
 
-            } catch (error) {
+                            countdown.textContent =
+                                "";
 
-                console.error(
-                    "Logout error:",
-                    error
-                );
+                            beginRace();
+
+                        },
+                        500
+                    );
+
+                }
+
+            },
+            1000
+        );
+
+}
+
+
+/* =========================================================
+   BEGIN RACE
+========================================================= */
+
+function beginRace() {
+
+    if (raceRunning) {
+
+        return;
+
+    }
+
+
+    raceRunning =
+        true;
+
+
+    raceStartTime =
+        performance.now();
+
+
+    raceLoop =
+        requestAnimationFrame(
+            updateRace
+        );
+
+}
+
+
+/* =========================================================
+   RACE ENGINE
+========================================================= */
+
+function updateRace(timestamp) {
+
+    if (
+        !raceRunning
+    ) {
+
+        return;
+
+    }
+
+
+    raceElapsed =
+        (timestamp -
+            raceStartTime) /
+        1000;
+
+
+    const car =
+        getSelectedCar();
+
+
+    const maxSpeed =
+        car.stats.speed;
+
+
+    const acceleration =
+        car.stats.acceleration;
+
+
+    /*
+       ავტომობილი თანდათან აჩქარდება.
+    */
+
+    playerSpeed +=
+        acceleration *
+        0.002;
+
+
+    /*
+       მაქსიმალური სიჩქარე.
+    */
+
+    if (
+        playerSpeed >
+        maxSpeed
+    ) {
+
+        playerSpeed =
+            maxSpeed;
+
+    }
+
+
+    /*
+       სიჩქარის მცირე დანაკარგი.
+    */
+
+    playerSpeed *=
+        0.998;
+
+
+    /*
+       Distance progress.
+    */
+
+    let progressGain =
+        playerSpeed /
+        maxSpeed *
+        0.22;
+
+
+    /*
+       Nitro.
+    */
+
+    if (
+        nitroPressed &&
+        playerNitro > 0
+    ) {
+
+        playerSpeed +=
+            3.5;
+
+        playerNitro -=
+            0.6;
+
+        progressGain *=
+            1.35;
+
+    } else {
+
+        playerNitro +=
+            0.08;
+
+    }
+
+
+    playerNitro =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                playerNitro
+            )
+        );
+
+
+    /*
+       Braking.
+    */
+
+    if (brakePressed) {
+
+        playerSpeed *=
+            0.94;
+
+    }
+
+
+    raceDistance +=
+        progressGain;
+
+
+    if (
+        raceDistance >
+        100
+    ) {
+
+        raceDistance =
+            100;
+
+    }
+
+
+    /*
+       Opponent movement.
+    */
+
+    opponents.forEach(
+        opponent => {
+
+            opponent.progress +=
+                opponent.speed;
+
+
+            if (
+                opponent.progress >
+                100
+            ) {
+
+                opponent.progress =
+                    100;
+
+            }
+
+        }
+    );
+
+
+    /*
+       Calculate player position.
+    */
+
+    const progressList = [
+
+        {
+            progress:
+                raceDistance,
+
+            player:
+                true
+        }
+
+    ];
+
+
+    opponents.forEach(
+        opponent => {
+
+            progressList.push({
+
+                progress:
+                    opponent.progress,
+
+                player:
+                    false
+
+            });
+
+        }
+    );
+
+
+    progressList.sort(
+        (
+            a,
+            b
+        ) =>
+            b.progress -
+            a.progress
+    );
+
+
+    playerPosition =
+        progressList.findIndex(
+            item =>
+                item.player
+        ) + 1;
+
+
+    /*
+       Finish.
+    */
+
+    if (
+        raceDistance >=
+        100
+    ) {
+
+        finishRace();
+
+        return;
+
+    }
+
+
+    updateRaceUI();
+
+
+    raceLoop =
+        requestAnimationFrame(
+            updateRace
+        );
+
+}
+
+
+/* =========================================================
+   RACE INPUT
+========================================================= */
+
+let nitroPressed =
+    false;
+
+let brakePressed =
+    false;
+
+
+/* =========================================================
+   UPDATE RACE UI
+========================================================= */
+
+function updateRaceUI() {
+
+    const speed =
+        document.getElementById(
+            "raceSpeed"
+        );
+
+
+    const distance =
+        document.getElementById(
+            "raceDistance"
+        );
+
+
+    const nitro =
+        document.getElementById(
+            "raceNitro"
+        );
+
+
+    const position =
+        document.getElementById(
+            "racePlayerPosition"
+        );
+
+
+    if (speed) {
+
+        speed.textContent =
+            Math.round(
+                playerSpeed
+            );
+
+    }
+
+
+    if (distance) {
+
+        distance.textContent =
+            Math.round(
+                raceDistance
+            );
+
+    }
+
+
+    if (nitro) {
+
+        nitro.textContent =
+            Math.round(
+                playerNitro
+            );
+
+    }
+
+
+    if (position) {
+
+        position.textContent =
+            playerPosition;
+
+    }
+
+
+    if (
+        playerSpeed >
+        player.bestSpeed
+    ) {
+
+        player.bestSpeed =
+            playerSpeed;
+
+    }
+
+
+    /*
+       Visual movement.
+    */
+
+    const car =
+        document.getElementById(
+            "playerCar"
+        );
+
+
+    if (car) {
+
+        car.style.left =
+            `${playerX}%`;
+
+    }
+
+
+    const opponentsContainer =
+        document.getElementById(
+            "raceOpponents"
+        );
+
+
+    if (opponentsContainer) {
+
+        opponents.forEach(
+            opponent => {
+
+                const element =
+                    opponent.element;
+
+
+                const roadHeight =
+                    opponentsContainer
+                        .parentElement
+                        .clientHeight;
+
+
+                const bottom =
+                    opponent.progress *
+                    0.7;
+
+
+                element.style.bottom =
+                    `${bottom}px`;
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RESET VISUALS
+========================================================= */
+
+function resetRaceVisuals() {
+
+    const car =
+        document.getElementById(
+            "playerCar"
+        );
+
+
+    if (car) {
+
+        car.style.left =
+            "50%";
+
+    }
+
+
+    const distance =
+        document.getElementById(
+            "raceDistance"
+        );
+
+
+    const speed =
+        document.getElementById(
+            "raceSpeed"
+        );
+
+
+    const nitro =
+        document.getElementById(
+            "raceNitro"
+        );
+
+
+    if (distance) {
+
+        distance.textContent =
+            "0";
+
+    }
+
+
+    if (speed) {
+
+        speed.textContent =
+            "0";
+
+    }
+
+
+    if (nitro) {
+
+        nitro.textContent =
+            "100";
+
+    }
+
+}
+
+
+/* =========================================================
+   FINISH RACE
+========================================================= */
+
+function finishRace() {
+
+    if (raceFinished) {
+
+        return;
+
+    }
+
+
+    raceFinished =
+        true;
+
+
+    raceRunning =
+        false;
+
+
+    cancelAnimationFrame(
+        raceLoop
+    );
+
+
+    player.races++;
+
+
+    const position =
+        playerPosition;
+
+
+    let moneyReward =
+        500;
+
+
+    let xpReward =
+        150;
+
+
+    if (
+        position === 1
+    ) {
+
+        moneyReward =
+            2500;
+
+        xpReward =
+            500;
+
+        player.wins++;
+
+    }
+
+
+    else if (
+        position === 2
+    ) {
+
+        moneyReward =
+            1500;
+
+        xpReward =
+            350;
+
+    }
+
+
+    else if (
+        position === 3
+    ) {
+
+        moneyReward =
+            900;
+
+        xpReward =
+            250;
+
+    }
+
+
+    player.money +=
+        moneyReward;
+
+
+    player.xp +=
+        xpReward;
+
+
+    checkLevelUp();
+
+
+    updateMissions();
+
+
+    savePlayer();
+
+    updatePlayerUI();
+
+
+    showRaceResult(
+        position,
+        moneyReward,
+        xpReward
+    );
+
+}
+
+
+/* =========================================================
+   RACE RESULT
+========================================================= */
+
+function showRaceResult(
+    position,
+    money,
+    xp
+) {
+
+    const result =
+        document.getElementById(
+            "raceResult"
+        );
+
+
+    const icon =
+        document.getElementById(
+            "raceResultIcon"
+        );
+
+
+    const title =
+        document.getElementById(
+            "raceResultTitle"
+        );
+
+
+    const text =
+        document.getElementById(
+            "raceResultText"
+        );
+
+
+    const moneyElement =
+        document.getElementById(
+            "raceMoneyReward"
+        );
+
+
+    const xpElement =
+        document.getElementById(
+            "raceXPReward"
+        );
+
+
+    if (!result) {
+
+        return;
+
+    }
+
+
+    if (
+        position === 1
+    ) {
+
+        if (icon) {
+
+            icon.textContent =
+                "🏆";
+
+        }
+
+        if (title) {
+
+            title.textContent =
+                "VICTORY!";
+
+        }
+
+    }
+
+    else {
+
+        if (icon) {
+
+            icon.textContent =
+                "🏁";
+
+        }
+
+        if (title) {
+
+            title.textContent =
+                "FINISHED";
+
+        }
+
+    }
+
+
+    if (text) {
+
+        text.textContent =
+            `შენ დაასრულე რბოლა ${position}-ე ადგილზე.`;
+
+    }
+
+
+    if (moneyElement) {
+
+        moneyElement.textContent =
+            `+$${money.toLocaleString()}`;
+
+    }
+
+
+    if (xpElement) {
+
+        xpElement.textContent =
+            `+${xp} XP`;
+
+    }
+
+
+    result.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+/* =========================================================
+   RACE CONTROLS
+========================================================= */
+
+function setupRaceControls() {
+
+    const left =
+        document.getElementById(
+            "leftButton"
+        );
+
+
+    const right =
+        document.getElementById(
+            "rightButton"
+        );
+
+
+    const accelerate =
+        document.getElementById(
+            "accelerateButton"
+        );
+
+
+    const brake =
+        document.getElementById(
+            "brakeButton"
+        );
+
+
+    const nitro =
+        document.getElementById(
+            "nitroButton"
+        );
+
+
+    function press(
+        element,
+        start,
+        end
+    ) {
+
+        if (!element) {
+
+            return;
+
+        }
+
+
+        element.addEventListener(
+            "pointerdown",
+            start
+        );
+
+
+        element.addEventListener(
+            "pointerup",
+            end
+        );
+
+
+        element.addEventListener(
+            "pointerleave",
+            end
+        );
+
+
+        element.addEventListener(
+            "pointercancel",
+            end
+        );
+
+    }
+
+
+    press(
+
+        accelerate,
+
+        () => {
+
+            if (
+                raceRunning
+            ) {
+
+                playerSpeed +=
+                    8;
+
+            }
+
+        },
+
+        () => {}
+
+    );
+
+
+    press(
+
+        brake,
+
+        () => {
+
+            brakePressed =
+                true;
+
+        },
+
+        () => {
+
+            brakePressed =
+                false;
+
+        }
+
+    );
+
+
+    press(
+
+        nitro,
+
+        () => {
+
+            nitroPressed =
+                true;
+
+        },
+
+        () => {
+
+            nitroPressed =
+                false;
+
+        }
+
+    );
+
+
+    if (left) {
+
+        left.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    raceRunning
+                ) {
+
+                    playerX -=
+                        5;
+
+                    playerX =
+                        Math.max(
+                            10,
+                            playerX
+                        );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    if (right) {
+
+        right.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    raceRunning
+                ) {
+
+                    playerX +=
+                        5;
+
+                    playerX =
+                        Math.min(
+                            90,
+                            playerX
+                        );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /*
+       Keyboard controls
+    */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                !raceRunning
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                event.key ===
+                "ArrowLeft"
+            ) {
+
+                playerX -= 4;
+
+                playerX =
+                    Math.max(
+                        10,
+                        playerX
+                    );
+
+            }
+
+
+            if (
+                event.key ===
+                "ArrowRight"
+            ) {
+
+                playerX += 4;
+
+                playerX =
+                    Math.min(
+                        90,
+                        playerX
+                    );
+
+            }
+
+
+            if (
+                event.key ===
+                "ArrowDown"
+            ) {
+
+                brakePressed =
+                    true;
+
+            }
+
+
+            if (
+                event.code ===
+                "Space"
+            ) {
+
+                nitroPressed =
+                    true;
+
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keyup",
+        event => {
+
+            if (
+                event.key ===
+                "ArrowDown"
+            ) {
+
+                brakePressed =
+                    false;
+
+            }
+
+
+            if (
+                event.code ===
+                "Space"
+            ) {
+
+                nitroPressed =
+                    false;
 
             }
 
@@ -2580,3 +2914,307 @@ if (logoutButton) {
     );
 
 }
+
+
+/* =========================================================
+   UPDATE MISSIONS
+========================================================= */
+
+function updateMissions() {
+
+    missions.forEach(
+        mission => {
+
+            if (
+                mission.completed
+            ) {
+
+                return;
+
+            }
+
+
+            let complete =
+                false;
+
+
+            if (
+                mission.id ===
+                "first_race" &&
+                player.races >= 1
+            ) {
+
+                complete =
+                    true;
+
+            }
+
+
+            if (
+                mission.id ===
+                "three_races" &&
+                player.races >= 3
+            ) {
+
+                complete =
+                    true;
+
+            }
+
+
+            if (
+                mission.id ===
+                "first_win" &&
+                player.wins >= 1
+            ) {
+
+                complete =
+                    true;
+
+            }
+
+
+            if (
+                mission.id ===
+                "level_five" &&
+                player.level >= 5
+            ) {
+
+                complete =
+                    true;
+
+            }
+
+
+            if (complete) {
+
+                mission.completed =
+                    true;
+
+
+                player.money +=
+                    mission.rewardMoney;
+
+
+                player.xp +=
+                    mission.rewardXP;
+
+
+                showNotification(
+                    `🎯 მისია შესრულებულია: ${mission.title}`
+                );
+
+            }
+
+        }
+    );
+
+
+    checkLevelUp();
+
+    savePlayer();
+
+}
+
+
+/* =========================================================
+   BACK TO RACE HUB
+========================================================= */
+
+function setupRaceBackButton() {
+
+    const button =
+        document.getElementById(
+            "raceBackButton"
+        );
+
+
+    if (!button) {
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const result =
+                document.getElementById(
+                    "raceResult"
+                );
+
+
+            const activeRace =
+                document.getElementById(
+                    "activeRace"
+                );
+
+
+            if (result) {
+
+                result.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            if (activeRace) {
+
+                activeRace.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            currentRaceMode =
+                null;
+
+
+            showScreen(
+                "raceScreen"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   HOME RACE BUTTON
+========================================================= */
+
+function setupHomeButton() {
+
+    const button =
+        document.getElementById(
+            "startRaceButton"
+        );
+
+
+    if (!button) {
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            showScreen(
+                "raceScreen"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   NAVIGATION EVENTS
+========================================================= */
+
+function setupNavigation() {
+
+    const buttons =
+        document.querySelectorAll(
+            ".nav-button"
+        );
+
+
+    buttons.forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const screen =
+                        button.dataset.screen;
+
+
+                    if (
+                        raceRunning &&
+                        screen !==
+                        "raceScreen"
+                    ) {
+
+                        showNotification(
+                            "🏁 დაასრულე რბოლა ჯერ!"
+                        );
+
+                        return;
+
+                    }
+
+
+                    showScreen(
+                        screen
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE GAME
+========================================================= */
+
+function initializeGame() {
+
+    loadPlayer();
+
+    updatePlayerUI();
+
+    renderGarage();
+
+    renderCars();
+
+    renderMissions();
+
+    renderShop();
+
+    renderLeaderboard();
+
+    setupNavigation();
+
+    setupRaceModes();
+
+    setupRaceControls();
+
+    setupRaceBackButton();
+
+    setupHomeButton();
+
+    showScreen(
+        "homeScreen"
+    );
+
+}
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        initializeGame();
+
+    }
+);
+```
