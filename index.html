@@ -3,3717 +3,840 @@
 <html lang="ka">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Street Legends</title>
-
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-body{
-    font-family:Arial,sans-serif;
-    background:#080a0f;
-    color:#fff;
-    min-height:100vh;
-}
-
-button{
-    border:0;
-    cursor:pointer;
-}
-
-.hidden{
-    display:none!important;
-}
-
-/* AUTH */
-
-.auth-screen{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
-    background:
-        radial-gradient(circle at top,#242936,#080a0f 60%);
-}
-
-.auth-card{
-    width:100%;
-    max-width:430px;
-    background:#12161e;
-    border:1px solid #292f3b;
-    border-radius:20px;
-    padding:35px;
-    text-align:center;
-    box-shadow:0 20px 70px rgba(0,0,0,.5);
-}
-
-.auth-logo{
-    font-size:65px;
-    margin-bottom:10px;
-}
-
-.auth-card h1{
-    font-size:28px;
-    letter-spacing:2px;
-}
-
-.auth-subtitle{
-    color:#8f98a8;
-    margin:10px 0 30px;
-}
-
-.auth-card h2{
-    margin-bottom:15px;
-}
-
-.auth-card input{
-    width:100%;
-    padding:14px;
-    margin:7px 0;
-    border-radius:10px;
-    border:1px solid #303746;
-    background:#0c0f15;
-    color:#fff;
-    outline:none;
-}
-
-.primary-btn,
-.secondary-btn{
-    width:100%;
-    padding:14px;
-    border-radius:10px;
-    font-weight:bold;
-    margin-top:12px;
-}
-
-.primary-btn{
-    background:#ff3b30;
-    color:#fff;
-}
-
-.secondary-btn{
-    background:#252b36;
-    color:#fff;
-}
-
-.text-button{
-    background:none;
-    color:#ff625a;
-    margin-top:15px;
-}
-
-/* GAME */
-
-#gameApp{
-    min-height:100vh;
-}
-
-.top-bar{
-    height:70px;
-    padding:0 25px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#11151d;
-    border-bottom:1px solid #252b35;
-    position:sticky;
-    top:0;
-    z-index:50;
-}
-
-.logo{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    letter-spacing:1px;
-}
-
-.logo span{
-    font-size:28px;
-}
-
-.player-info{
-    display:flex;
-    gap:20px;
-    color:#d9dde5;
-}
-
-.main-content{
-    max-width:1250px;
-    margin:auto;
-    padding:30px;
-    padding-bottom:120px;
-}
-
-.screen{
-    display:none;
-}
-
-.screen.active{
-    display:block;
-}
-
-/* HOME */
-
-.hero{
-    min-height:430px;
-    border-radius:25px;
-    padding:55px;
-    background:
-        linear-gradient(120deg,#151a23,#202733);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    overflow:hidden;
-}
-
-.eyebrow{
-    color:#ff4b40;
-    font-size:13px;
-    font-weight:bold;
-    letter-spacing:3px;
-}
-
-.hero h1{
-    font-size:64px;
-    line-height:.95;
-    margin:15px 0;
-}
-
-.hero p{
-    max-width:500px;
-    color:#9ba3b2;
-    line-height:1.6;
-    margin-bottom:25px;
-}
-
-.hero-car{
-    font-size:180px;
-    transform:rotate(-5deg);
-}
-
-.stats-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
-    margin-top:25px;
-}
-
-.stat-card{
-    background:#12161e;
-    border:1px solid #272e3a;
-    padding:22px;
-    border-radius:16px;
-    display:flex;
-    gap:15px;
-    align-items:center;
-}
-
-.stat-card>span{
-    font-size:32px;
-}
-
-.stat-card small{
-    color:#8992a2;
-    display:block;
-}
-
-.stat-card strong{
-    font-size:25px;
-}
-
-/* TITLES */
-
-.page-title{
-    margin-bottom:25px;
-}
-
-.page-title h1{
-    font-size:42px;
-    margin-top:7px;
-}
-
-/* CARDS */
-
-.cars-grid,
-.shop-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-}
-
-.car-card,
-.shop-card,
-.mission-card,
-.profile-card{
-    background:#12161e;
-    border:1px solid #282f3b;
-    border-radius:16px;
-    padding:20px;
-}
-
-.car-image{
-    height:170px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#0b0e14;
-    border-radius:12px;
-    margin-bottom:15px;
-}
-
-.car-image span{
-    font-size:90px;
-}
-
-.car-info h3{
-    font-size:22px;
-    margin-bottom:7px;
-}
-
-.car-info p{
-    color:#8992a2;
-    margin:6px 0;
-}
-
-.car-info button,
-.shop-card button{
-    width:100%;
-    padding:12px;
-    margin-top:15px;
-    border-radius:8px;
-    background:#ff3b30;
-    color:#fff;
-    font-weight:bold;
-}
-
-.car-info button:disabled{
-    background:#252b35;
-    color:#777;
-}
-
-/* MISSIONS */
-
-.missions-list{
-    display:grid;
-    gap:15px;
-}
-
-.mission-card{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.mission-card strong{
-    display:block;
-    margin-bottom:8px;
-}
-
-.mission-card small{
-    color:#929aaa;
-}
-
-/* LEADERBOARD */
-
-.leaderboard{
-    display:grid;
-    gap:10px;
-}
-
-.leaderboard-row{
-    display:grid;
-    grid-template-columns:60px 1fr 100px 150px;
-    align-items:center;
-    padding:18px;
-    background:#12161e;
-    border:1px solid #272e39;
-    border-radius:12px;
-}
-
-/* PROFILE */
-
-.profile-card{
-    max-width:600px;
-    margin:auto;
-    text-align:center;
-    padding:45px;
-}
-
-.profile-avatar{
-    font-size:90px;
-}
-
-.profile-card h1{
-    margin:15px 0;
-}
-
-.profile-stats{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-    margin:25px 0;
-}
-
-.profile-stats div{
-    background:#0b0e14;
-    padding:20px;
-    border-radius:12px;
-}
-
-.profile-stats strong{
-    display:block;
-    font-size:30px;
-}
-
-.profile-stats span{
-    color:#8d96a5;
-}
-
-/* RACE HUB */
-
-.race-modes{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-}
-
-.race-mode{
-    padding:30px;
-    min-height:180px;
-    background:#12161e;
-    border:1px solid #292f3b;
-    border-radius:18px;
-    text-align:left;
-    color:#fff;
-    transition:.2s;
-}
-
-.race-mode:hover{
-    transform:translateY(-4px);
-    border-color:#ff3b30;
-}
-
-.race-mode .icon{
-    font-size:45px;
-    margin-bottom:15px;
-}
-
-.race-mode h3{
-    font-size:22px;
-    margin-bottom:8px;
-}
-
-.race-mode p{
-    color:#8d96a5;
-}
-
-/* RACE GAME */
-
-.race-game{
-    position:relative;
-}
-
-.race-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:15px;
-    flex-wrap:wrap;
-    gap:10px;
-}
-
-.race-stats{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
-
-.race-stat{
-    background:#12161e;
-    padding:10px 15px;
-    border-radius:10px;
-    border:1px solid #292f3b;
-}
-
-.race-road{
-    position:relative;
-    width:100%;
-    height:600px;
-    overflow:hidden;
-    border-radius:20px;
-    border:5px solid #202631;
-    background:
-        repeating-linear-gradient(
-            180deg,
-            #292d32 0,
-            #292d32 45px,
-            #30353b 45px,
-            #30353b 90px
-        );
-}
-
-.road-line{
-    position:absolute;
-    width:7px;
-    height:100%;
-    background:repeating-linear-gradient(
-        180deg,
-        #eee 0,
-        #eee 50px,
-        transparent 50px,
-        transparent 100px
-    );
-    opacity:.6;
-}
-
-.road-line.left{
-    left:33%;
-}
-
-.road-line.right{
-    left:66%;
-}
-
-.player-car{
-    position:absolute;
-    left:50%;
-    bottom:35px;
-    transform:translateX(-50%);
-    font-size:65px;
-    z-index:20;
-    transition:left .08s;
-}
-
-.opponent{
-    position:absolute;
-    font-size:55px;
-    z-index:10;
-}
-
-.race-countdown{
-    position:absolute;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:100px;
-    font-weight:bold;
-    text-shadow:0 5px 30px #000;
-    z-index:40;
-    pointer-events:none;
-}
-
-.race-controls{
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    margin-top:15px;
-    flex-wrap:wrap;
-}
-
-.race-controls button{
-    width:80px;
-    height:65px;
-    border-radius:12px;
-    background:#252b35;
-    color:#fff;
-    font-size:25px;
-}
-
-.race-controls .accelerate{
-    background:#22a447;
-}
-
-.race-controls .nitro{
-    background:#2563eb;
-}
-
-.race-result{
-    position:absolute;
-    inset:0;
-    background:rgba(5,7,10,.9);
-    z-index:100;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.result-card{
-    width:min(500px,90%);
-    background:#151a23;
-    border:1px solid #343b49;
-    border-radius:20px;
-    padding:40px;
-    text-align:center;
-}
-
-.result-icon{
-    font-size:80px;
-}
-
-.result-card h2{
-    font-size:40px;
-    margin:15px;
-}
-
-.result-rewards{
-    display:flex;
-    justify-content:center;
-    gap:25px;
-    margin:25px;
-}
-
-.result-rewards div{
-    background:#0b0e14;
-    padding:15px 25px;
-    border-radius:10px;
-}
-
-/* NAV */
-
-.bottom-nav{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    height:75px;
-    background:#11151d;
-    border-top:1px solid #292f3a;
-    display:flex;
-    justify-content:center;
-    gap:5px;
-    z-index:100;
-    overflow-x:auto;
-}
-
-.nav-button{
-    min-width:90px;
-    padding:8px;
-    background:none;
-    color:#737d8d;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:4px;
-}
-
-.nav-button.active{
-    color:#ff4b40;
-}
-
-.nav-button span{
-    font-size:10px;
-}
-
-/* NOTIFICATION */
-
-.notification{
-    position:fixed;
-    top:85px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:999;
-    padding:15px 25px;
-    border-radius:10px;
-    background:#151a23;
-    border:1px solid #ff3b30;
-    display:none;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:700px){
-
-    .top-bar{
-        padding:0 12px;
-    }
-
-    .player-info{
-        gap:8px;
-        font-size:12px;
-    }
-
-    .main-content{
-        padding:15px;
-        padding-bottom:100px;
-    }
-
-    .hero{
-        padding:30px;
-        min-height:450px;
-    }
-
-    .hero h1{
-        font-size:42px;
-    }
-
-    .hero-car{
-        font-size:90px;
-    }
-
-    .stats-grid{
-        grid-template-columns:1fr;
-    }
-
-    .leaderboard-row{
-        grid-template-columns:40px 1fr 70px;
-    }
-
-    .leaderboard-row strong:last-child{
-        display:none;
-    }
-
-    .bottom-nav{
-        justify-content:flex-start;
-    }
-
-    .race-road{
-        height:500px;
-    }
-
-}
-
-/* AUTH MESSAGE */
-
-.message{
-    min-height:20px;
-    margin-top:10px;
-    font-size:14px;
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;font-family:Arial,sans-serif;background:#080a0f;color:#fff}
+body{overflow-x:hidden}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.screen{display:none;min-height:calc(100vh - 145px);padding:30px 20px 170px}
+.screen.active{display:block}
+button{border:0}
+.primary-btn{background:#ff3b30;color:#fff;padding:14px 22px;border-radius:10px;font-weight:800;border:0;cursor:pointer}
+.secondary-btn{background:#252b35;color:#fff;padding:12px 20px;border-radius:10px;cursor:pointer}
+.text-button{background:none;color:#ff554d;margin-top:15px;cursor:pointer}
+.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 20%,#202630,#080a0f 65%)}
+.auth-card{width:min(430px,100%);background:#11151d;border:1px solid #303641;border-radius:22px;padding:35px;box-shadow:0 25px 80px rgba(0,0,0,.5);text-align:center}
+.auth-logo{font-size:65px;margin-bottom:10px}
+.auth-card h1{font-size:30px}
+.auth-subtitle{color:#8d96a5;margin:10px 0 25px}
+.auth-card h2{margin-bottom:15px}
+.auth-card input{width:100%;padding:14px;margin:7px 0;background:#20252d;border:1px solid #343b47;border-radius:9px;color:#fff;outline:none}
+.auth-card input:focus{border-color:#ff3b30}
+.auth-card .primary-btn{width:100%;margin-top:10px}
+#loginMessage,#registerMessage{min-height:20px;color:#ff6b63;margin-top:10px;font-size:13px}
+.top-bar{height:75px;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,13,18,.94);border-bottom:1px solid #252b35;display:flex;align-items:center;justify-content:space-between;padding:0 25px;backdrop-filter:blur(15px)}
+.logo{display:flex;gap:10px;align-items:center;font-size:20px}
+.player-info{display:flex;gap:20px;color:#ddd}
+.main-content{padding-top:75px}
+.hero{max-width:1200px;margin:auto;min-height:480px;display:flex;align-items:center;justify-content:space-between;padding:50px 20px}
+.eyebrow{font-size:12px;letter-spacing:3px;color:#ff3b30;font-weight:800}
+.hero h1{font-size:clamp(48px,8vw,90px);line-height:.9;margin:15px 0 25px}
+.hero p{max-width:500px;color:#9ca3af;line-height:1.7;margin-bottom:25px}
+.hero-car{font-size:180px;filter:drop-shadow(0 20px 30px #000)}
+.stats-grid{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:15px;padding:0 20px}
+.stat-card{background:#11151d;border:1px solid #303641;border-radius:15px;padding:20px;display:flex;gap:15px;align-items:center}
+.stat-card>span{font-size:30px}
+.stat-card small{display:block;color:#8d96a5;font-size:10px}
+.stat-card strong{font-size:22px}
+.page-title{max-width:1200px;margin:0 auto 25px}
+.page-title h1{font-size:48px;margin-top:8px}
+.cars-grid,.shop-grid{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.car-card,.shop-card,.mission-card,.profile-card{background:#11151d;border:1px solid #303641;border-radius:16px;padding:20px}
+.car-image{height:150px;background:linear-gradient(135deg,#20252d,#0e1117);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:80px;margin-bottom:15px}
+.car-info h3{margin-bottom:5px}
+.car-type{font-size:12px;color:#8d96a5}
+.stat-line{margin-top:12px}
+.stat-line>div:first-child{display:flex;justify-content:space-between;font-size:11px;color:#9ca3af}
+.stat-bg{height:7px;background:#272d36;border-radius:10px;overflow:hidden;margin-top:5px}
+.stat-fill{height:100%;background:#ff3b30}
+.card-actions{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+.shop-grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.shop-card{text-align:center}
+.shop-icon{font-size:55px}
+.shop-card p{color:#8d96a5;line-height:1.5;margin:10px 0 20px}
+.shop-card button{background:#ff3b30;color:white;padding:11px 18px;border-radius:8px;font-weight:bold}
+.missions-list,.leaderboard{max-width:900px;margin:auto;display:grid;gap:12px}
+.mission-card{display:flex;justify-content:space-between;align-items:center}
+.mission-card small{display:block;color:#8d96a5;margin-top:7px}
+.mission-reward{text-align:right;color:#ffd700;font-weight:bold}
+.leaderboard-row{background:#11151d;border:1px solid #303641;border-radius:12px;padding:15px 18px;display:grid;grid-template-columns:60px 1fr 100px 100px;align-items:center}
+.rank{font-size:22px}
+.player-row{display:flex;gap:10px;align-items:center}
+.player-avatar{width:38px;height:38px;background:#252b35;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.profile-card{max-width:500px;margin:30px auto;text-align:center;padding:40px}
+.profile-avatar{font-size:80px}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:25px 0}
+.profile-stats div{background:#20252d;padding:18px;border-radius:10px}
+.profile-stats strong,.profile-stats span{display:block}
+.profile-stats span{font-size:10px;color:#8d96a5;margin-top:5px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:70px;background:rgba(10,13,18,.97);border-top:1px solid #303641;display:flex;justify-content:center;z-index:500;overflow-x:auto}
+.nav-button{min-width:85px;background:none;color:#7f8793;font-size:20px;padding:8px 10px}
+.nav-button span{display:block;font-size:9px;margin-top:4px}
+.nav-button.active{color:#ff3b30}
+.race-menu{max-width:1200px;margin:auto;padding:25px 0}
+.race-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
+.race-mode-card{background:#11151d;border:1px solid #303641;border-radius:18px;color:#fff;text-align:left;padding:28px;min-height:260px;transition:.2s}
+.race-mode-card:hover{transform:translateY(-5px);border-color:#ff3b30}
+.race-mode-icon{font-size:55px}
+.race-mode-card h2{margin:15px 0 8px}
+.race-mode-card p{color:#8d96a5;line-height:1.5}
+.race-mode-card span{display:block;color:#ff3b30;font-size:11px;font-weight:bold;margin-top:15px}
+.race-game{position:fixed;inset:0;z-index:10000;background:#05070a;overflow:hidden;touch-action:none;user-select:none}
+.race-road{position:absolute;inset:0;margin:auto;width:min(650px,100vw);background:linear-gradient(90deg,#181c22 0%,#252a31 13%,#363b42 14%,#363b42 86%,#252a31 87%,#181c22 100%);overflow:hidden}
+.race-road:before,.race-road:after{content:"";position:absolute;top:0;bottom:0;width:5px;background:#eee;z-index:4}
+.race-road:before{left:14%}
+.race-road:after{right:14%}
+.road-mark{position:absolute;top:-180px;width:6px;height:130px;background:#ddd;animation:roadMove .7s linear infinite;z-index:2}
+.road-mark-1{left:38%}
+.road-mark-2{left:50%}
+.road-mark-3{left:62%}
+@keyframes roadMove{to{transform:translateY(110vh)}}
+.player-car{position:absolute;z-index:20;left:50%;bottom:115px;transform:translateX(-50%);font-size:55px;width:70px;height:90px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 8px 8px #000)}
+.traffic-car{position:absolute;z-index:15;transform:translateX(-50%);font-size:50px;width:70px;height:90px;display:flex;align-items:center;justify-content:center}
+.race-top-hud{position:absolute;z-index:50;top:15px;left:50%;transform:translateX(-50%);width:min(700px,90%);display:flex;gap:8px}
+.race-hud-box{flex:1;background:rgba(10,13,18,.9);border:1px solid #343b47;border-radius:10px;padding:9px;text-align:center}
+.race-hud-box small{display:block;color:#8d96a5;font-size:9px}
+.race-hud-box strong{font-size:16px}
+.race-nitro{position:absolute;z-index:50;top:90px;left:50%;transform:translateX(-50%);width:min(400px,70%)}
+.nitro-label{font-size:10px;margin-bottom:4px}
+.nitro-bar{height:9px;background:#252b35;border-radius:10px;overflow:hidden}
+.nitro-fill{height:100%;width:100%;background:#20a8ff}
+.race-countdown{position:absolute;z-index:100;inset:0;display:flex;align-items:center;justify-content:center;font-size:110px;font-weight:900;text-shadow:0 5px 30px #000}
+.race-controls{position:absolute;z-index:60;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.control-button{width:62px;height:62px;border-radius:13px;background:rgba(15,18,24,.94);border:1px solid #414956;color:#fff;font-size:21px;touch-action:none}
+.control-button.accelerate{background:#16753b}
+.control-button.brake{background:#85271f}
+.control-button.nitro{background:#14699c}
+.exit-race-button{position:absolute;z-index:100;right:15px;top:15px;background:rgba(10,13,18,.9);color:white;border:1px solid #414956;border-radius:8px;padding:9px 13px}
+.race-message{position:absolute;z-index:100;left:50%;top:45%;transform:translate(-50%,-50%) scale(.7);font-size:55px;font-weight:900;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap}
+.race-message.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.race-road.crashed{animation:shake .08s linear 8}
+@keyframes shake{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.race-result{position:fixed;z-index:20000;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:20px}
+.race-result-box{width:min(480px,100%);background:#11151d;border:1px solid #303641;border-radius:20px;padding:30px;text-align:center}
+.result-icon{font-size:70px}
+.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
+.result-stats div{background:#20252d;padding:14px;border-radius:9px}
+.result-stats span{display:block;font-size:9px;color:#8d96a5}
+.result-stats strong{display:block;margin-top:5px}
+.race-result-box button{margin:5px}
+@media(max-width:750px){
+.top-bar{padding:0 12px}.logo strong{font-size:14px}.player-info{gap:8px;font-size:12px}
+.hero{min-height:400px}.hero-car{font-size:90px}.stats-grid{grid-template-columns:1fr}
+.race-modes{grid-template-columns:1fr}.race-mode-card{min-height:180px;padding:20px}
+.leaderboard-row{grid-template-columns:45px 1fr 55px 70px;font-size:12px}
+.nav-button{min-width:72px}.bottom-nav{justify-content:flex-start}
+.control-button{width:58px;height:58px}.race-controls{gap:5px}.race-hud-box{padding:7px 3px}.race-hud-box strong{font-size:12px}
+.race-nitro{top:78px}.screen{padding-left:12px;padding-right:12px}
 }
 </style>
 </head>
-
 <body>
 
-<!-- =====================================================
-AUTH
-===================================================== -->
-
 <div id="authScreen" class="auth-screen">
+<div class="auth-card">
+<div class="auth-logo">🏎️</div>
+<h1>STREET LEGENDS</h1>
+<p class="auth-subtitle">შენი ქუჩა. შენი მანქანა. შენი ლეგენდა.</p>
 
-    <div class="auth-card">
-
-        <div class="auth-logo">🏎️</div>
-
-        <h1>STREET LEGENDS</h1>
-
-        <p class="auth-subtitle">
-            შენი ქუჩა. შენი მანქანა. შენი ლეგენდა.
-        </p>
-
-        <div id="loginForm">
-
-            <h2>შესვლა</h2>
-
-            <input
-                id="loginEmail"
-                type="email"
-                placeholder="Email"
-            >
-
-            <input
-                id="loginPassword"
-                type="password"
-                placeholder="Password"
-            >
-
-            <button
-                id="loginButton"
-                class="primary-btn"
-            >
-                შესვლა
-            </button>
-
-            <p id="loginMessage" class="message"></p>
-
-            <button
-                id="showRegister"
-                class="text-button"
-            >
-                ანგარიში არ გაქვს? რეგისტრაცია
-            </button>
-
-        </div>
-
-        <div
-            id="registerForm"
-            class="hidden"
-        >
-
-            <h2>რეგისტრაცია</h2>
-
-            <input
-                id="registerUsername"
-                type="text"
-                maxlength="20"
-                placeholder="Nickname"
-            >
-
-            <input
-                id="registerEmail"
-                type="email"
-                placeholder="Email"
-            >
-
-            <input
-                id="registerPassword"
-                type="password"
-                placeholder="Password"
-            >
-
-            <button
-                id="registerButton"
-                class="primary-btn"
-            >
-                ანგარიშის შექმნა
-            </button>
-
-            <p
-                id="registerMessage"
-                class="message"
-            ></p>
-
-            <button
-                id="showLogin"
-                class="text-button"
-            >
-                უკვე გაქვს ანგარიში? შესვლა
-            </button>
-
-        </div>
-
-    </div>
-
+<div id="loginForm">
+<h2>შესვლა</h2>
+<input id="loginEmail" type="email" placeholder="Email">
+<input id="loginPassword" type="password" placeholder="Password">
+<button id="loginButton" class="primary-btn">შესვლა</button>
+<p id="loginMessage"></p>
+<button id="showRegister" class="text-button">ანგარიში არ გაქვს? რეგისტრაცია</button>
 </div>
 
-
-<!-- =====================================================
-GAME
-===================================================== -->
+<div id="registerForm" class="hidden">
+<h2>რეგისტრაცია</h2>
+<input id="registerUsername" type="text" placeholder="Nickname" maxlength="20">
+<input id="registerEmail" type="email" placeholder="Email">
+<input id="registerPassword" type="password" placeholder="Password">
+<button id="registerButton" class="primary-btn">ანგარიშის შექმნა</button>
+<p id="registerMessage"></p>
+<button id="showLogin" class="text-button">უკვე გაქვს ანგარიში? შესვლა</button>
+</div>
+</div>
+</div>
 
 <div id="gameApp" class="hidden">
-
 <header class="top-bar">
-
-    <div class="logo">
-        <span>🏎️</span>
-        <strong>STREET LEGENDS</strong>
-    </div>
-
-    <div class="player-info">
-
-        <span id="gameUsername">
-            Player
-        </span>
-
-        <span>
-            💰
-            <b id="gameMoney">0</b>
-        </span>
-
-        <span>
-            ⭐
-            <b id="gameLevel">1</b>
-        </span>
-
-    </div>
-
+<div class="logo"><span>🏎️</span><strong>STREET LEGENDS</strong></div>
+<div class="player-info">
+<span id="gameUsername">Player</span>
+<span>💰 <b id="gameMoney">0</b></span>
+<span>⭐ <b id="gameLevel">1</b></span>
+</div>
 </header>
-
 
 <main class="main-content">
 
-
-<!-- HOME -->
-
-<section
-    id="homeScreen"
-    class="screen active"
->
-
-    <div class="hero">
-
-        <div>
-
-            <span class="eyebrow">
-                STREET LEGENDS
-            </span>
-
-            <h1>
-                BECOME<br>
-                THE LEGEND
-            </h1>
-
-            <p>
-                იყიდე მანქანები,
-                გააუმჯობესე ისინი,
-                იასპარეზე სხვადასხვა რეჟიმში
-                და გახდი ყველაზე სწრაფი.
-            </p>
-
-            <button
-                id="homeRaceButton"
-                class="primary-btn"
-                style="max-width:250px"
-            >
-                🏁 RACE
-            </button>
-
-        </div>
-
-        <div class="hero-car">
-            🏎️
-        </div>
-
-    </div>
-
-
-    <div class="stats-grid">
-
-        <div class="stat-card">
-            <span>🏆</span>
-            <div>
-                <small>WINS</small>
-                <strong id="homeWins">0</strong>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <span>🚗</span>
-            <div>
-                <small>CARS</small>
-                <strong id="homeCars">1</strong>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <span>⚡</span>
-            <div>
-                <small>BEST SPEED</small>
-                <strong id="homeSpeed">0</strong>
-            </div>
-        </div>
-
-    </div>
-
+<section id="homeScreen" class="screen active">
+<div class="hero">
+<div>
+<span class="eyebrow">STREET LEGENDS</span>
+<h1>BECOME<br>THE LEGEND</h1>
+<p>იყიდე მანქანები, გააუმჯობესე ისინი, იასპარეზე, მოიგე ფული და გახდი ყველაზე სწრაფი მოთამაშე.</p>
+<button id="homeRaceButton" class="primary-btn">🏁 RACING</button>
+</div>
+<div class="hero-car">🏎️</div>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><span>🏆</span><div><small>WINS</small><strong id="homeWins">0</strong></div></div>
+<div class="stat-card"><span>🚗</span><div><small>CARS</small><strong id="homeCars">1</strong></div></div>
+<div class="stat-card"><span>⚡</span><div><small>BEST SPEED</small><strong id="homeSpeed">0</strong></div></div>
+</div>
 </section>
 
-
-<!-- RACE HUB -->
-
-<section
-    id="raceScreen"
-    class="screen"
->
-
-    <div
-        id="raceHub"
-    >
-
-        <div class="page-title">
-
-            <span class="eyebrow">
-                RACING
-            </span>
-
-            <h1>
-                CHOOSE RACE
-            </h1>
-
-        </div>
-
-
-        <div class="race-modes">
-
-            <button
-                class="race-mode"
-                data-mode="quick"
-            >
-
-                <div class="icon">
-                    🏁
-                </div>
-
-                <h3>
-                    QUICK RACE
-                </h3>
-
-                <p>
-                    ჩვეულებრივი რბოლა AI
-                    მოწინააღმდეგეებთან.
-                </p>
-
-            </button>
-
-
-            <button
-                class="race-mode"
-                data-mode="time"
-            >
-
-                <div class="icon">
-                    ⏱️
-                </div>
-
-                <h3>
-                    TIME TRIAL
-                </h3>
-
-                <p>
-                    რაც შეიძლება სწრაფად
-                    გაიარე დისტანცია.
-                </p>
-
-            </button>
-
-
-            <button
-                class="race-mode"
-                data-mode="career"
-            >
-
-                <div class="icon">
-                    🏆
-                </div>
-
-                <h3>
-                    CAREER
-                </h3>
-
-                <p>
-                    ეტაპობრივად გახდი
-                    ქუჩის ლეგენდა.
-                </p>
-
-            </button>
-
-
-            <button
-                class="race-mode"
-                data-mode="drift"
-            >
-
-                <div class="icon">
-                    💨
-                </div>
-
-                <h3>
-                    DRIFT
-                </h3>
-
-                <p>
-                    დააგროვე მაქსიმალური
-                    Drift Score.
-                </p>
-
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <!-- ACTIVE RACE -->
-
-    <div
-        id="activeRace"
-        class="race-game hidden"
-    >
-
-        <div class="race-header">
-
-            <div>
-
-                <span class="eyebrow">
-                    RACING
-                </span>
-
-                <h2 id="raceModeTitle">
-                    QUICK RACE
-                </h2>
-
-            </div>
-
-            <div class="race-stats">
-
-                <div class="race-stat">
-                    ⚡
-                    <b id="raceSpeed">0</b>
-                    km/h
-                </div>
-
-                <div class="race-stat">
-                    🏁
-                    <b id="raceDistance">0</b>%
-                </div>
-
-                <div class="race-stat">
-                    🏆
-                    <b id="racePosition">4</b>
-                    / 4
-                </div>
-
-                <div class="race-stat">
-                    💨
-                    <b id="raceNitro">100</b>%
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div
-            id="raceRoad"
-            class="race-road"
-        >
-
-            <div class="road-line left"></div>
-            <div class="road-line right"></div>
-
-
-            <div
-                id="raceOpponents"
-            ></div>
-
-
-            <div
-                id="playerCar"
-                class="player-car"
-            >
-                🏎️
-            </div>
-
-
-            <div
-                id="raceCountdown"
-                class="race-countdown"
-            ></div>
-
-
-            <div
-                id="raceResult"
-                class="race-result hidden"
-            >
-
-                <div class="result-card">
-
-                    <div
-                        id="resultIcon"
-                        class="result-icon"
-                    >
-                        🏆
-                    </div>
-
-                    <h2 id="resultTitle">
-                        VICTORY!
-                    </h2>
-
-                    <p id="resultText">
-                        დასრულდა!
-                    </p>
-
-
-                    <div class="result-rewards">
-
-                        <div>
-                            💰
-                            <strong
-                                id="resultMoney"
-                            >
-                                +0
-                            </strong>
-                        </div>
-
-                        <div>
-                            ⭐
-                            <strong
-                                id="resultXP"
-                            >
-                                +0
-                            </strong>
-                        </div>
-
-                    </div>
-
-
-                    <button
-                        id="raceAgainButton"
-                        class="primary-btn"
-                    >
-                        🔄 RACE AGAIN
-                    </button>
-
-
-                    <button
-                        id="backRaceButton"
-                        class="secondary-btn"
-                    >
-                        ← BACK
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="race-controls">
-
-            <button id="leftButton">
-                ◀
-            </button>
-
-            <button id="brakeButton">
-                🛑
-            </button>
-
-            <button
-                id="accelerateButton"
-                class="accelerate"
-            >
-                ▲
-            </button>
-
-            <button
-                id="nitroButton"
-                class="nitro"
-            >
-                ⚡
-            </button>
-
-            <button id="rightButton">
-                ▶
-            </button>
-
-        </div>
-
-
-        <button
-            id="exitRaceButton"
-            class="secondary-btn"
-            style="max-width:250px;display:block;margin:15px auto"
-        >
-            ← RACE MENU
-        </button>
-
-    </div>
-
+<section id="raceScreen" class="screen">
+<div id="raceMenu" class="race-menu">
+<div class="page-title">
+<span class="eyebrow">STREET LEGENDS RACING</span>
+<h1>CHOOSE RACE</h1>
+<p style="color:#8d96a5;margin-top:10px">აირჩიე რბოლის რეჟიმი.</p>
+</div>
+<div class="race-modes">
+<button class="race-mode-card" data-mode="traffic"><div class="race-mode-icon">🚗</div><h2>TRAFFIC RUSH</h2><p>აარიდე თავი მანქანებს და მიაღწიე ფინიშამდე.</p><span>5 KM • NORMAL</span></button>
+<button class="race-mode-card" data-mode="time"><div class="race-mode-icon">⏱️</div><h2>TIME ATTACK</h2><p>მიაღწიე ფინიშს რაც შეიძლება სწრაფად.</p><span>4 KM • SPEED</span></button>
+<button class="race-mode-card" data-mode="survival"><div class="race-mode-icon">💀</div><h2>SURVIVAL</h2><p>გაუძელი traffic-ს რაც შეიძლება დიდხანს.</p><span>60 SEC • ENDLESS</span></button>
+</div>
+</div>
+
+<div id="raceGame" class="race-game hidden">
+<div class="race-top-hud">
+<div class="race-hud-box"><small>SPEED</small><strong><span id="raceSpeed">0</span> KM/H</strong></div>
+<div class="race-hud-box"><small>DISTANCE</small><strong id="raceDistance">0 / 5000 M</strong></div>
+<div class="race-hud-box"><small>SCORE</small><strong id="raceScore">0</strong></div>
+</div>
+<div class="race-nitro"><div class="nitro-label">⚡ NITRO</div><div class="nitro-bar"><div id="raceNitro" class="nitro-fill"></div></div></div>
+<div id="raceCountdown" class="race-countdown hidden">3</div>
+<div id="raceRoad" class="race-road">
+<div class="road-mark road-mark-1"></div>
+<div class="road-mark road-mark-2"></div>
+<div class="road-mark road-mark-3"></div>
+<div id="trafficContainer"></div>
+<div id="playerCar" class="player-car">🏎️</div>
+<div id="raceMessage" class="race-message"></div>
+</div>
+<div class="race-controls">
+<button id="leftButton" class="control-button">◀</button>
+<button id="brakeButton" class="control-button brake">🛑</button>
+<button id="accelerateButton" class="control-button accelerate">▲</button>
+<button id="nitroButton" class="control-button nitro">⚡</button>
+<button id="rightButton" class="control-button">▶</button>
+</div>
+<button id="exitRaceButton" class="exit-race-button">✕ EXIT</button>
+</div>
 </section>
 
-
-<!-- GARAGE -->
-
-<section
-    id="garageScreen"
-    class="screen"
->
-
-    <div class="page-title">
-
-        <span class="eyebrow">
-            MY COLLECTION
-        </span>
-
-        <h1>
-            GARAGE
-        </h1>
-
-    </div>
-
-    <div
-        id="garageGrid"
-        class="cars-grid"
-    ></div>
-
+<section id="garageScreen" class="screen">
+<div class="page-title"><span class="eyebrow">MY COLLECTION</span><h1>GARAGE</h1></div>
+<div id="garageGrid" class="cars-grid"></div>
 </section>
 
-
-<!-- CARS -->
-
-<section
-    id="carsScreen"
-    class="screen"
->
-
-    <div class="page-title">
-
-        <span class="eyebrow">
-            DEALERSHIP
-        </span>
-
-        <h1>
-            CARS
-        </h1>
-
-    </div>
-
-    <div
-        id="carsGrid"
-        class="cars-grid"
-    ></div>
-
+<section id="carsScreen" class="screen">
+<div class="page-title"><span class="eyebrow">DEALERSHIP</span><h1>CARS</h1></div>
+<div id="carsGrid" class="cars-grid"></div>
 </section>
 
-
-<!-- MISSIONS -->
-
-<section
-    id="missionsScreen"
-    class="screen"
->
-
-    <div class="page-title">
-
-        <span class="eyebrow">
-            DAILY
-        </span>
-
-        <h1>
-            MISSIONS
-        </h1>
-
-    </div>
-
-    <div
-        id="missionsList"
-        class="missions-list"
-    ></div>
-
+<section id="missionsScreen" class="screen">
+<div class="page-title"><span class="eyebrow">DAILY</span><h1>MISSIONS</h1></div>
+<div id="missionsList" class="missions-list"></div>
 </section>
 
-
-<!-- SHOP -->
-
-<section
-    id="shopScreen"
-    class="screen"
->
-
-    <div class="page-title">
-
-        <span class="eyebrow">
-            MARKET
-        </span>
-
-        <h1>
-            SHOP
-        </h1>
-
-    </div>
-
-    <div
-        id="shopGrid"
-        class="shop-grid"
-    ></div>
-
+<section id="shopScreen" class="screen">
+<div class="page-title"><span class="eyebrow">MARKET</span><h1>SHOP</h1></div>
+<div id="shopGrid" class="shop-grid"></div>
 </section>
 
-
-<!-- LEADERBOARD -->
-
-<section
-    id="leaderboardScreen"
-    class="screen"
->
-
-    <div class="page-title">
-
-        <span class="eyebrow">
-            GLOBAL
-        </span>
-
-        <h1>
-            LEADERBOARD
-        </h1>
-
-    </div>
-
-    <div
-        id="leaderboardList"
-        class="leaderboard"
-    ></div>
-
+<section id="leaderboardScreen" class="screen">
+<div class="page-title"><span class="eyebrow">GLOBAL</span><h1>LEADERBOARD</h1></div>
+<div id="leaderboardList" class="leaderboard"></div>
 </section>
 
-
-<!-- PROFILE -->
-
-<section
-    id="profileScreen"
-    class="screen"
->
-
-    <div class="profile-card">
-
-        <div class="profile-avatar">
-            🏎️
-        </div>
-
-        <h1 id="profileUsername">
-            Player
-        </h1>
-
-        <p>
-            Level
-            <b id="profileLevel">
-                1
-            </b>
-        </p>
-
-
-        <div class="profile-stats">
-
-            <div>
-
-                <strong id="profileWins">
-                    0
-                </strong>
-
-                <span>
-                    WINS
-                </span>
-
-            </div>
-
-
-            <div>
-
-                <strong id="profileCars">
-                    1
-                </strong>
-
-                <span>
-                    CARS
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <button
-            id="logoutButton"
-            class="secondary-btn"
-        >
-            გასვლა
-        </button>
-
-    </div>
-
+<section id="profileScreen" class="screen">
+<div class="profile-card">
+<div class="profile-avatar">🏎️</div>
+<h1 id="profileUsername">Player</h1>
+<p style="color:#8d96a5;margin-top:8px">Level <b id="profileLevel">1</b></p>
+<div class="profile-stats">
+<div><strong id="profileWins">0</strong><span>WINS</span></div>
+<div><strong id="profileCars">1</strong><span>CARS</span></div>
+</div>
+<button id="logoutButton" class="secondary-btn">გასვლა</button>
+</div>
 </section>
 
 </main>
 
-
-<!-- NAV -->
-
 <nav class="bottom-nav">
-
-    <button
-        class="nav-button active"
-        data-screen="homeScreen"
-    >
-        🏠
-        <span>HOME</span>
-    </button>
-
-    <button
-        class="nav-button"
-        data-screen="raceScreen"
-    >
-        🏁
-        <span>RACE</span>
-    </button>
-
-    <button
-        class="nav-button"
-        data-screen="garageScreen"
-    >
-        🚗
-        <span>GARAGE</span>
-    </button>
-
-    <button
-        class="nav-button"
-        data-screen="carsScreen"
-    >
-        🛒
-        <span>CARS</span>
-    </button>
-
-    <button
-        class="nav-button"
-        data-screen="missionsScreen"
-    >
-        🎯
-        <span>MISSIONS</span>
-    </button>
-
-    <button
-        class="nav-button"
-        data-screen="shopScreen"
-    >
-        💰
-        <span>SHOP</span>
-    </button>
-
-    <button
-        class="nav-button"
-        data-screen="leaderboardScreen"
-    >
-        🏆
-        <span>RANK</span>
-    </button>
-
-    <button
-        class="nav-button"
-        data-screen="profileScreen"
-    >
-        👤
-        <span>PROFILE</span>
-    </button>
-
+<button class="nav-button active" data-screen="homeScreen">🏠<span>HOME</span></button>
+<button class="nav-button" data-screen="raceScreen">🏁<span>RACE</span></button>
+<button class="nav-button" data-screen="garageScreen">🚗<span>GARAGE</span></button>
+<button class="nav-button" data-screen="carsScreen">🛒<span>CARS</span></button>
+<button class="nav-button" data-screen="missionsScreen">🎯<span>MISSIONS</span></button>
+<button class="nav-button" data-screen="shopScreen">💰<span>SHOP</span></button>
+<button class="nav-button" data-screen="leaderboardScreen">🏆<span>RANK</span></button>
+<button class="nav-button" data-screen="profileScreen">👤<span>PROFILE</span></button>
 </nav>
-
 </div>
 
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,updateProfile}from"https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import{getFirestore,doc,setDoc,getDoc,collection,getDocs}from"https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-<div
-    id="notification"
-    class="notification"
-></div>
-
-
-<script>
-
-/* =========================================================
-PLAYER
-========================================================= */
-
-let player={
-    name:"Player",
-    email:"",
-    password:"",
-    money:5000,
-    level:1,
-    xp:0,
-    wins:0,
-    races:0,
-    bestSpeed:0,
-    ownedCars:["starter"],
-    selectedCar:"starter"
+const firebaseConfig={
+apiKey:"AIzaSyBZ2rZilsRo1FuSeOaKEduhWefVQUDWIq4",
+authDomain:"street-legends-36204.firebaseapp.com",
+projectId:"street-legends-36204",
+storageBucket:"street-legends-36204.firebasestorage.app",
+messagingSenderId:"755646586968",
+appId:"1:755646586968:web:c95084b38dbc1f7cdd6a2d"
 };
 
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-/* =========================================================
-CARS
-========================================================= */
+const CAR_CLASSES={
+C:{color:"#8d96a5"},
+B:{color:"#22c55e"},
+A:{color:"#3b82f6"},
+S:{color:"#ff3b30"}
+};
 
 const cars=[
-
-{
-    id:"starter",
-    brand:"Street",
-    name:"Runner",
-    type:"Starter",
-    class:"C",
-    emoji:"🚗",
-    price:0,
-    level:1,
-    speed:180,
-    acceleration:55,
-    handling:60
-},
-
-{
-    id:"eclipse",
-    brand:"Night",
-    name:"Eclipse",
-    type:"Sport",
-    class:"B",
-    emoji:"🏎️",
-    price:12000,
-    level:3,
-    speed:240,
-    acceleration:70,
-    handling:68
-},
-
-{
-    id:"phantom",
-    brand:"Phantom",
-    name:"GT",
-    type:"Super",
-    class:"A",
-    emoji:"🏎️",
-    price:35000,
-    level:8,
-    speed:310,
-    acceleration:82,
-    handling:78
-},
-
-{
-    id:"thunder",
-    brand:"Thunder",
-    name:"X",
-    type:"Hyper",
-    class:"S",
-    emoji:"🚘",
-    price:85000,
-    level:15,
-    speed:390,
-    acceleration:94,
-    handling:88
-}
-
+{id:"starter",brand:"Street",name:"Runner",type:"SPORT",class:"C",price:0,levelRequired:1,emoji:"🚗",stats:{speed:180,acceleration:55,handling:65}},
+{id:"civic",brand:"Honda",name:"Civic",type:"SPORT",class:"C",price:8500,levelRequired:2,emoji:"🚘",stats:{speed:210,acceleration:62,handling:72}},
+{id:"gti",brand:"Volkswagen",name:"GTI",type:"HOT HATCH",class:"B",price:18000,levelRequired:4,emoji:"🚙",stats:{speed:250,acceleration:75,handling:76}},
+{id:"supra",brand:"Toyota",name:"Supra",type:"JDM",class:"B",price:35000,levelRequired:7,emoji:"🏎️",stats:{speed:310,acceleration:82,handling:79}},
+{id:"gtr",brand:"Nissan",name:"GT-R",type:"JDM",class:"A",price:65000,levelRequired:12,emoji:"🏎️",stats:{speed:360,acceleration:90,handling:84}},
+{id:"m4",brand:"BMW",name:"M4",type:"COUPE",class:"A",price:85000,levelRequired:15,emoji:"🚘",stats:{speed:350,acceleration:92,handling:88}},
+{id:"r8",brand:"Audi",name:"R8",type:"SUPERCAR",class:"S",price:140000,levelRequired:20,emoji:"🏎️",stats:{speed:410,acceleration:95,handling:91}},
+{id:"lambo",brand:"Lamborghini",name:"Huracan",type:"SUPERCAR",class:"S",price:220000,levelRequired:25,emoji:"🏎️",stats:{speed:450,acceleration:98,handling:93}}
 ];
 
-
-/* =========================================================
-MISSIONS
-========================================================= */
-
-const missions=[
-
-{
-    id:"first",
-    title:"FIRST RACE",
-    text:"დაასრულე პირველი რბოლა.",
-    money:1000,
-    xp:300,
-    done:false
-},
-
-{
-    id:"three",
-    title:"RACE DRIVER",
-    text:"დაასრულე 3 რბოლა.",
-    money:2500,
-    xp:700,
-    done:false
-},
-
-{
-    id:"win",
-    title:"FIRST VICTORY",
-    text:"მოიგე პირველი რბოლა.",
-    money:3000,
-    xp:1000,
-    done:false
-},
-
-{
-    id:"five",
-    title:"GETTING SERIOUS",
-    text:"მიაღწიე Level 5-ს.",
-    money:5000,
-    xp:1500,
-    done:false
-}
-
-];
-
-
-/* =========================================================
-AUTH
-========================================================= */
-
-function getAccounts(){
-
-    return JSON.parse(
-        localStorage.getItem(
-            "streetAccounts"
-        ) || "[]"
-    );
-
-}
-
-
-function saveAccounts(accounts){
-
-    localStorage.setItem(
-        "streetAccounts",
-        JSON.stringify(accounts)
-    );
-
-}
-
-
-document
-.getElementById("showRegister")
-.onclick=()=>{
-
-    document
-    .getElementById("loginForm")
-    .classList.add("hidden");
-
-    document
-    .getElementById("registerForm")
-    .classList.remove("hidden");
-
+const defaultPlayer={
+name:"Player",
+money:15000,
+xp:0,
+level:1,
+wins:0,
+races:0,
+bestSpeed:0,
+ownedCars:["starter"],
+selectedCar:"starter",
+nitro:100,
+missions:{first_race:false,three_races:false,first_win:false,level_five:false}
 };
 
+let player={...defaultPlayer};
+let currentUser=null;
 
-document
-.getElementById("showLogin")
-.onclick=()=>{
+function localKey(){return"street_legends_"+(currentUser?.uid||"guest")}
 
-    document
-    .getElementById("registerForm")
-    .classList.add("hidden");
+function saveLocal(){
+localStorage.setItem(localKey(),JSON.stringify(player));
+}
 
-    document
-    .getElementById("loginForm")
-    .classList.remove("hidden");
+async function savePlayer(){
+saveLocal();
+if(!currentUser)return;
+try{
+await setDoc(doc(db,"players",currentUser.uid),player,{merge:true});
+}catch(e){console.warn("Firebase save failed",e)}
+}
 
+async function loadPlayer(){
+const local=localStorage.getItem(localKey());
+if(local){
+try{player={...defaultPlayer,...JSON.parse(local)}}catch(e){}
+}
+if(currentUser){
+try{
+const snap=await getDoc(doc(db,"players",currentUser.uid));
+if(snap.exists()){
+player={...defaultPlayer,...snap.data()};
+saveLocal();
+}else{
+player={...defaultPlayer,name:currentUser.displayName||"Player"};
+await savePlayer();
+}
+}catch(e){console.warn("Firebase load failed",e)}
+}
+updatePlayerUI();
+}
+
+function xpForNextLevel(){return player.level*1000}
+
+async function addXP(amount){
+player.xp+=amount;
+while(player.xp>=xpForNextLevel()){
+player.xp-=xpForNextLevel();
+player.level++;
+}
+checkMissions();
+await savePlayer();
+}
+
+function updatePlayerUI(){
+const ids={
+gameUsername:player.name,
+gameMoney:player.money.toLocaleString(),
+gameLevel:player.level,
+homeWins:player.wins,
+homeCars:player.ownedCars.length,
+homeSpeed:Math.floor(player.bestSpeed),
+profileUsername:player.name,
+profileLevel:player.level,
+profileWins:player.wins,
+profileCars:player.ownedCars.length
 };
-
-
-document
-.getElementById("registerButton")
-.onclick=()=>{
-
-    const username=
-        document
-        .getElementById("registerUsername")
-        .value.trim();
-
-    const email=
-        document
-        .getElementById("registerEmail")
-        .value.trim()
-        .toLowerCase();
-
-    const password=
-        document
-        .getElementById("registerPassword")
-        .value;
-
-
-    const message=
-        document
-        .getElementById("registerMessage");
-
-
-    if(
-        username.length<3
-    ){
-
-        message.textContent=
-            "Nickname მინიმუმ 3 სიმბოლო უნდა იყოს.";
-
-        return;
-
-    }
-
-
-    if(
-        !email.includes("@")
-    ){
-
-        message.textContent=
-            "შეიყვანე სწორი Email.";
-
-        return;
-
-    }
-
-
-    if(
-        password.length<6
-    ){
-
-        message.textContent=
-            "Password მინიმუმ 6 სიმბოლო უნდა იყოს.";
-
-        return;
-
-    }
-
-
-    const accounts=
-        getAccounts();
-
-
-    if(
-        accounts.some(
-            a=>a.email===email
-        )
-    ){
-
-        message.textContent=
-            "ეს Email უკვე გამოყენებულია.";
-
-        return;
-
-    }
-
-
-    accounts.push({
-
-        username,
-        email,
-        password
-
-    });
-
-
-    saveAccounts(accounts);
-
-
-    player.name=
-        username;
-
-    player.email=
-        email;
-
-    player.password=
-        password;
-
-
-    savePlayer();
-
-
-    message.textContent=
-        "ანგარიში შეიქმნა!";
-
-
-    setTimeout(
-        showGame,
-        500
-    );
-
-};
-
-
-document
-.getElementById("loginButton")
-.onclick=()=>{
-
-    const email=
-        document
-        .getElementById("loginEmail")
-        .value.trim()
-        .toLowerCase();
-
-    const password=
-        document
-        .getElementById("loginPassword")
-        .value;
-
-
-    const message=
-        document
-        .getElementById("loginMessage");
-
-
-    const account=
-        getAccounts()
-        .find(
-            a=>
-                a.email===email &&
-                a.password===password
-        );
-
-
-    if(!account){
-
-        message.textContent=
-            "Email ან Password არასწორია.";
-
-        return;
-
-    }
-
-
-    loadPlayer();
-
-
-    player.name=
-        account.username;
-
-    player.email=
-        account.email;
-
-    player.password=
-        account.password;
-
-
-    savePlayer();
-
-
-    showGame();
-
-};
-
-
-/* =========================================================
-PLAYER SAVE
-========================================================= */
-
-function savePlayer(){
-
-    localStorage.setItem(
-        "streetPlayer",
-        JSON.stringify(player)
-    );
-
+Object.entries(ids).forEach(([id,value])=>{
+const el=document.getElementById(id);
+if(el)el.textContent=value;
+});
 }
-
-
-function loadPlayer(){
-
-    const saved=
-        localStorage.getItem(
-            "streetPlayer"
-        );
-
-
-    if(saved){
-
-        try{
-
-            player=
-                JSON.parse(saved);
-
-        }catch(e){}
-
-    }
-
-}
-
-
-/* =========================================================
-SHOW GAME
-========================================================= */
-
-function showGame(){
-
-    document
-    .getElementById("authScreen")
-    .classList.add("hidden");
-
-    document
-    .getElementById("gameApp")
-    .classList.remove("hidden");
-
-    updateUI();
-
-    renderAll();
-
-}
-
-
-/* =========================================================
-UI
-========================================================= */
-
-function updateUI(){
-
-    document
-    .getElementById("gameUsername")
-    .textContent=
-        player.name;
-
-    document
-    .getElementById("gameMoney")
-    .textContent=
-        player.money.toLocaleString();
-
-    document
-    .getElementById("gameLevel")
-    .textContent=
-        player.level;
-
-    document
-    .getElementById("homeWins")
-    .textContent=
-        player.wins;
-
-    document
-    .getElementById("homeCars")
-    .textContent=
-        player.ownedCars.length;
-
-    document
-    .getElementById("homeSpeed")
-    .textContent=
-        Math.round(
-            player.bestSpeed
-        );
-
-    document
-    .getElementById("profileUsername")
-    .textContent=
-        player.name;
-
-    document
-    .getElementById("profileLevel")
-    .textContent=
-        player.level;
-
-    document
-    .getElementById("profileWins")
-    .textContent=
-        player.wins;
-
-    document
-    .getElementById("profileCars")
-    .textContent=
-        player.ownedCars.length;
-
-}
-
-
-/* =========================================================
-NAVIGATION
-========================================================= */
 
 function showScreen(id){
-
-    document
-    .querySelectorAll(".screen")
-    .forEach(
-        s=>
-            s.classList.remove(
-                "active"
-            )
-    );
-
-
-    document
-    .getElementById(id)
-    .classList.add("active");
-
-
-    document
-    .querySelectorAll(".nav-button")
-    .forEach(
-        b=>{
-
-            b.classList.toggle(
-                "active",
-                b.dataset.screen===id
-            );
-
-        }
-    );
-
+document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+const target=document.getElementById(id);
+if(target)target.classList.add("active");
+document.querySelectorAll(".nav-button").forEach(btn=>btn.classList.toggle("active",btn.dataset.screen===id));
+if(id==="garageScreen")renderGarage();
+if(id==="carsScreen")renderCars();
+if(id==="missionsScreen")renderMissions();
+if(id==="shopScreen")renderShop();
+if(id==="leaderboardScreen")renderLeaderboard();
+if(id==="profileScreen")updatePlayerUI();
 }
 
+document.querySelectorAll(".nav-button").forEach(btn=>{
+btn.addEventListener("click",()=>showScreen(btn.dataset.screen));
+});
 
-document
-.querySelectorAll(".nav-button")
-.forEach(
-    button=>{
+document.getElementById("homeRaceButton").addEventListener("click",()=>showScreen("raceScreen"));
 
-        button.onclick=()=>{
-
-            showScreen(
-                button.dataset.screen
-            );
-
-        };
-
-    }
-);
-
-
-document
-.getElementById("homeRaceButton")
-.onclick=()=>{
-
-    showScreen("raceScreen");
-
-};
-
-
-/* =========================================================
-GARAGE
-========================================================= */
-
-function renderGarage(){
-
-    const grid=
-        document
-        .getElementById("garageGrid");
-
-    grid.innerHTML="";
-
-
-    player.ownedCars.forEach(
-        id=>{
-
-            const car=
-                cars.find(
-                    c=>c.id===id
-                );
-
-
-            if(!car)return;
-
-
-            const card=
-                document
-                .createElement("div");
-
-
-            card.className=
-                "car-card";
-
-
-            card.innerHTML=`
-
-                <div class="car-image">
-                    <span>
-                        ${car.emoji}
-                    </span>
-                </div>
-
-                <div class="car-info">
-
-                    <h3>
-                        ${car.brand}
-                        ${car.name}
-                    </h3>
-
-                    <p>
-                        ${car.type}
-                    </p>
-
-                    <p>
-                        ⚡ Speed:
-                        ${car.speed}
-                    </p>
-
-                    <p>
-                        🚀 Acceleration:
-                        ${car.acceleration}
-                    </p>
-
-                    <button>
-                        ${
-                            player.selectedCar===id
-                            ?"✓ SELECTED"
-                            :"SELECT"
-                        }
-                    </button>
-
-                </div>
-            `;
-
-
-            card
-            .querySelector("button")
-            .onclick=()=>{
-
-                player.selectedCar=id;
-
-                savePlayer();
-
-                renderGarage();
-
-                showNotification(
-                    "🚗 მანქანა არჩეულია!"
-                );
-
-            };
-
-
-            grid.appendChild(card);
-
-        }
-    );
-
+function statHTML(name,value,max){
+return`<div class="stat-line"><div><span>${name}</span><span>${value}</span></div><div class="stat-bg"><div class="stat-fill" style="width:${Math.min(100,value/max*100)}%"></div></div></div>`
 }
-
-
-/* =========================================================
-CARS
-========================================================= */
 
 function renderCars(){
-
-    const grid=
-        document
-        .getElementById("carsGrid");
-
-    grid.innerHTML="";
-
-
-    cars.forEach(
-        car=>{
-
-            const owned=
-                player.ownedCars
-                .includes(car.id);
-
-            const locked=
-                player.level<car.level;
-
-
-            const card=
-                document
-                .createElement("div");
-
-
-            card.className=
-                "car-card";
-
-
-            card.innerHTML=`
-
-                <div class="car-image">
-                    <span>
-                        ${car.emoji}
-                    </span>
-                </div>
-
-                <div class="car-info">
-
-                    <h3>
-                        ${car.brand}
-                        ${car.name}
-                    </h3>
-
-                    <p>
-                        CLASS ${car.class}
-                    </p>
-
-                    <p>
-                        ⚡ ${car.speed}
-                    </p>
-
-                    <p>
-                        🚀 ${car.acceleration}
-                    </p>
-
-                    <button
-                        ${
-                            locked&&!owned
-                            ?"disabled"
-                            :""
-                        }
-                    >
-
-                        ${
-                            owned
-                            ?"✓ OWNED"
-                            :
-                            locked
-                            ?"🔒 LEVEL "+car.level
-                            :"BUY $"+car.price.toLocaleString()
-                        }
-
-                    </button>
-
-                </div>
-            `;
-
-
-            if(
-                !owned &&
-                !locked
-            ){
-
-                card
-                .querySelector("button")
-                .onclick=()=>{
-
-                    if(
-                        player.money<
-                        car.price
-                    ){
-
-                        showNotification(
-                            "💰 ფული არ გყოფნის!"
-                        );
-
-                        return;
-
-                    }
-
-
-                    player.money-=
-                        car.price;
-
-                    player.ownedCars.push(
-                        car.id
-                    );
-
-                    savePlayer();
-
-                    updateUI();
-
-                    renderCars();
-
-                    renderGarage();
-
-                    showNotification(
-                        "🚗 მანქანა იყიდე!"
-                    );
-
-                };
-
-            }
-
-
-            grid.appendChild(card);
-
-        }
-    );
-
+const grid=document.getElementById("carsGrid");
+if(!grid)return;
+grid.innerHTML="";
+cars.forEach(car=>{
+const owned=player.ownedCars.includes(car.id);
+const locked=player.level<car.levelRequired;
+const info=CAR_CLASSES[car.class];
+const card=document.createElement("div");
+card.className="car-card";
+card.innerHTML=`<div class="car-image" style="border-bottom:3px solid ${info.color}">${car.emoji}</div><div class="car-info"><div style="display:flex;justify-content:space-between"><div><h3>${car.brand} ${car.name}</h3><div class="car-type">${car.type}</div></div><strong style="color:${info.color}">${car.class}</strong></div>${statHTML("SPEED",car.stats.speed,500)}${statHTML("ACCELERATION",car.stats.acceleration,100)}${statHTML("HANDLING",car.stats.handling,100)}<div class="card-actions"><div>${owned?`<span style="color:#22c55e">✓ OWNED</span>`:locked?`<span style="color:#8d96a5">🔒 LV ${car.levelRequired}</span>`:`<strong style="color:#ffd700">$${car.price.toLocaleString()}</strong>`}</div>${owned?`<button class="secondary-btn" data-select="${car.id}">SELECT</button>`:locked?`<button class="secondary-btn" disabled>LOCKED</button>`:`<button class="primary-btn" data-buy="${car.id}">BUY</button>`}</div></div>`;
+grid.appendChild(card);
+});
+grid.querySelectorAll("[data-buy]").forEach(btn=>btn.addEventListener("click",()=>buyCar(btn.dataset.buy)));
+grid.querySelectorAll("[data-select]").forEach(btn=>btn.addEventListener("click",()=>selectCar(btn.dataset.select)));
 }
 
+function renderGarage(){
+const grid=document.getElementById("garageGrid");
+if(!grid)return;
+grid.innerHTML="";
+player.ownedCars.forEach(id=>{
+const car=cars.find(x=>x.id===id);
+if(!car)return;
+const selected=player.selectedCar===id;
+const card=document.createElement("div");
+card.className="car-card";
+card.innerHTML=`<div class="car-image">${car.emoji}</div><h2>${car.brand} ${car.name}</h2><p style="color:#8d96a5;margin-top:5px">${car.type}</p><div class="card-actions"><span style="color:${selected?"#22c55e":"#8d96a5"}">${selected?"✓ SELECTED":"AVAILABLE"}</span>${selected?"":`<button class="primary-btn" data-select="${car.id}">SELECT</button>`}</div>`;
+grid.appendChild(card);
+});
+grid.querySelectorAll("[data-select]").forEach(btn=>btn.addEventListener("click",()=>selectCar(btn.dataset.select)));
+}
 
-/* =========================================================
-MISSIONS
-========================================================= */
+async function buyCar(id){
+const car=cars.find(x=>x.id===id);
+if(!car||player.ownedCars.includes(id)||player.level<car.levelRequired||player.money<car.price)return;
+player.money-=car.price;
+player.ownedCars.push(id);
+await savePlayer();
+updatePlayerUI();
+renderCars();
+renderGarage();
+}
+
+async function selectCar(id){
+if(!player.ownedCars.includes(id))return;
+player.selectedCar=id;
+await savePlayer();
+renderCars();
+renderGarage();
+}
+
+const missions=[
+{id:"first_race",title:"FIRST RACE",description:"დაასრულე შენი პირველი რბოლა.",money:1000,xp:300},
+{id:"three_races",title:"RACE DRIVER",description:"დაასრულე 3 რბოლა.",money:2500,xp:700},
+{id:"first_win",title:"FIRST VICTORY",description:"მოიგე შენი პირველი რბოლა.",money:3000,xp:1000},
+{id:"level_five",title:"GETTING SERIOUS",description:"მიაღწიე Level 5-ს.",money:5000,xp:1500}
+];
+
+function checkMissions(){
+missions.forEach(m=>{
+if(player.missions[m.id])return;
+let complete=false;
+if(m.id==="first_race")complete=player.races>=1;
+if(m.id==="three_races")complete=player.races>=3;
+if(m.id==="first_win")complete=player.wins>=1;
+if(m.id==="level_five")complete=player.level>=5;
+if(complete){
+player.missions[m.id]=true;
+player.money+=m.money;
+player.xp+=m.xp;
+}
+});
+}
 
 function renderMissions(){
-
-    const list=
-        document
-        .getElementById("missionsList");
-
-    list.innerHTML="";
-
-
-    missions.forEach(
-        mission=>{
-
-            const card=
-                document
-                .createElement("div");
-
-            card.className=
-                "mission-card";
-
-
-            card.innerHTML=`
-
-                <div>
-
-                    <strong>
-                        🎯 ${mission.title}
-                    </strong>
-
-                    <small>
-                        ${mission.text}
-                    </small>
-
-                </div>
-
-                <div>
-
-                    <b>
-                        +$${mission.money}
-                    </b>
-
-                    <br>
-
-                    <small>
-                        +${mission.xp} XP
-                    </small>
-
-                </div>
-
-            `;
-
-
-            if(mission.done){
-
-                card.style.opacity=".5";
-
-                card.querySelector(
-                    "strong"
-                ).textContent=
-                    "✅ "+mission.title;
-
-            }
-
-
-            list.appendChild(card);
-
-        }
-    );
-
+const box=document.getElementById("missionsList");
+if(!box)return;
+box.innerHTML="";
+missions.forEach(m=>{
+const done=player.missions[m.id];
+const card=document.createElement("div");
+card.className="mission-card";
+card.innerHTML=`<div><strong>${done?"✅":"🎯"} ${m.title}</strong><small>${m.description}</small></div><div class="mission-reward">${done?"COMPLETED":`+$${m.money.toLocaleString()}<br><span style="color:#8d96a5;font-size:10px">+${m.xp} XP</span>`}</div>`;
+box.appendChild(card);
+});
 }
 
-
-/* =========================================================
-SHOP
-========================================================= */
+const shopItems=[
+{name:"Engine Boost",description:"აუმჯობესებს სიჩქარეს.",price:1000,icon:"🚀"},
+{name:"Nitro Pack",description:"ავსებს Nitro-ს.",price:750,icon:"⚡"},
+{name:"Racing Tires",description:"აუმჯობესებს მართვას.",price:1500,icon:"🛞"},
+{name:"Brake Kit",description:"აუმჯობესებს დამუხრუჭებას.",price:1200,icon:"🛑"}
+];
 
 function renderShop(){
-
-    const grid=
-        document
-        .getElementById("shopGrid");
-
-    grid.innerHTML="";
-
-
-    const items=[
-
-        ["🚀","Engine Boost",1000],
-        ["⚡","Nitro Pack",750],
-        ["🛞","Racing Tires",1500],
-        ["🛑","Brake Kit",1200]
-
-    ];
-
-
-    items.forEach(
-        item=>{
-
-            const card=
-                document
-                .createElement("div");
-
-
-            card.className=
-                "shop-card";
-
-
-            card.innerHTML=`
-
-                <div
-                    style="
-                        font-size:50px;
-                    "
-                >
-                    ${item[0]}
-                </div>
-
-                <h3>
-                    ${item[1]}
-                </h3>
-
-                <p>
-                    გააუმჯობესე შენი
-                    racing შესაძლებლობები.
-                </p>
-
-                <button>
-                    $${item[2].toLocaleString()}
-                </button>
-
-            `;
-
-
-            card
-            .querySelector("button")
-            .onclick=()=>{
-
-                if(
-                    player.money<
-                    item[2]
-                ){
-
-                    showNotification(
-                        "💰 ფული არ გყოფნის!"
-                    );
-
-                    return;
-
-                }
-
-
-                player.money-=
-                    item[2];
-
-                savePlayer();
-
-                updateUI();
-
-                showNotification(
-                    "🛒 ნივთი იყიდე!"
-                );
-
-            };
-
-
-            grid.appendChild(card);
-
-        }
-    );
-
+const box=document.getElementById("shopGrid");
+if(!box)return;
+box.innerHTML="";
+shopItems.forEach(item=>{
+const card=document.createElement("div");
+card.className="shop-card";
+card.innerHTML=`<div class="shop-icon">${item.icon}</div><h3>${item.name}</h3><p>${item.description}</p><button data-price="${item.price}" data-name="${item.name}">$${item.price.toLocaleString()}</button>`;
+box.appendChild(card);
+});
+box.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",async()=>{
+const price=Number(btn.dataset.price);
+if(player.money<price)return;
+player.money-=price;
+await savePlayer();
+updatePlayerUI();
+});
 }
 
+const bots=[
+{name:"ShadowRacer",level:42,xp:42100},
+{name:"SpeedKing",level:38,xp:38600},
+{name:"DriftMaster",level:34,xp:34100},
+{name:"NightWolf",level:29,xp:29400},
+{name:"TurboBoy",level:25,xp:25300}
+];
 
-/* =========================================================
-LEADERBOARD
-========================================================= */
-
-function renderLeaderboard(){
-
-    const list=
-        document
-        .getElementById(
-            "leaderboardList"
-        );
-
-
-    const players=[
-
-        {
-            name:"ShadowRacer",
-            level:42,
-            xp:42100
-        },
-
-        {
-            name:"SpeedKing",
-            level:38,
-            xp:38600
-        },
-
-        {
-            name:"DriftMaster",
-            level:34,
-            xp:34100
-        },
-
-        {
-            name:"NightWolf",
-            level:29,
-            xp:29400
-        },
-
-        {
-            name:player.name,
-            level:player.level,
-            xp:player.xp
-        }
-
-    ];
-
-
-    players.sort(
-        (a,b)=>
-            b.xp-a.xp
-    );
-
-
-    list.innerHTML="";
-
-
-    players.forEach(
-        (p,i)=>{
-
-            const row=
-                document
-                .createElement("div");
-
-            row.className=
-                "leaderboard-row";
-
-
-            row.innerHTML=`
-
-                <span>
-                    ${
-                        i===0
-                        ?"🥇"
-                        :
-                        i===1
-                        ?"🥈"
-                        :
-                        i===2
-                        ?"🥉"
-                        :
-                        i+1
-                    }
-                </span>
-
-                <strong>
-                    ${p.name}
-                </strong>
-
-                <span>
-                    LV ${p.level}
-                </span>
-
-                <strong>
-                    ${p.xp.toLocaleString()}
-                    XP
-                </strong>
-
-            `;
-
-
-            list.appendChild(row);
-
-        }
-    );
-
+async function renderLeaderboard(){
+const box=document.getElementById("leaderboardList");
+if(!box)return;
+let all=[...bots,{name:player.name,level:player.level,xp:player.xp}];
+try{
+const snap=await getDocs(collection(db,"players"));
+snap.forEach(d=>{
+const p=d.data();
+if(p.name&&d.id!==currentUser?.uid)all.push({name:p.name,level:p.level||1,xp:p.xp||0});
+});
+}catch(e){}
+const unique=[];
+const names=new Set();
+all.sort((a,b)=>b.xp-a.xp).forEach(p=>{if(!names.has(p.name)){names.add(p.name);unique.push(p)}});
+box.innerHTML="";
+unique.slice(0,50).forEach((p,i)=>{
+const row=document.createElement("div");
+row.className="leaderboard-row";
+row.innerHTML=`<span class="rank">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</span><div class="player-row"><div class="player-avatar">🏎️</div><strong style="${p.name===player.name?"color:#ff3b30":""}">${p.name}${p.name===player.name?" (YOU)":""}</strong></div><span>LV ${p.level}</span><strong>${p.xp.toLocaleString()}</strong>`;
+box.appendChild(row);
+});
 }
 
+document.getElementById("showRegister").addEventListener("click",()=>{
+document.getElementById("loginForm").classList.add("hidden");
+document.getElementById("registerForm").classList.remove("hidden");
+});
+document.getElementById("showLogin").addEventListener("click",()=>{
+document.getElementById("registerForm").classList.add("hidden");
+document.getElementById("loginForm").classList.remove("hidden");
+});
 
-/* =========================================================
-RACE ENGINE
-========================================================= */
+document.getElementById("registerButton").addEventListener("click",async()=>{
+const name=document.getElementById("registerUsername").value.trim();
+const email=document.getElementById("registerEmail").value.trim();
+const password=document.getElementById("registerPassword").value;
+const msg=document.getElementById("registerMessage");
+if(!name||!email||password.length<6){msg.textContent="Nickname, Email და მინიმუმ 6 სიმბოლოიანი Password შეავსე.";return}
+try{
+const result=await createUserWithEmailAndPassword(auth,email,password);
+await updateProfile(result.user,{displayName:name});
+currentUser=result.user;
+player={...defaultPlayer,name};
+await savePlayer();
+msg.textContent="ანგარიში შეიქმნა!";
+}catch(e){msg.textContent=e.message}
+});
 
-let race={
+document.getElementById("loginButton").addEventListener("click",async()=>{
+const email=document.getElementById("loginEmail").value.trim();
+const password=document.getElementById("loginPassword").value;
+const msg=document.getElementById("loginMessage");
+try{await signInWithEmailAndPassword(auth,email,password)}catch(e){msg.textContent="Email ან Password არასწორია."}
+});
 
-    running:false,
+document.getElementById("logoutButton").addEventListener("click",async()=>{await signOut(auth)});
 
-    mode:"quick",
+onAuthStateChanged(auth,async user=>{
+currentUser=user;
+if(user){
+document.getElementById("authScreen").classList.add("hidden");
+document.getElementById("gameApp").classList.remove("hidden");
+await loadPlayer();
+showScreen("homeScreen");
+}else{
+document.getElementById("authScreen").classList.remove("hidden");
+document.getElementById("gameApp").classList.add("hidden");
+}
+});
 
-    speed:0,
+let raceRunning=false,raceMode="traffic",raceSpeed=0,raceDistance=0,raceScore=0,raceNitro=100,targetDistance=5000,playerX=50,trafficCars=[],lastFrame=0,animationFrame=null,survivalTime=0;
+const keys={left:false,right:false,accelerate:false,brake:false,nitro:false};
 
-    distance:0,
+document.querySelectorAll(".race-mode-card").forEach(btn=>btn.addEventListener("click",()=>startSelectedRace(btn.dataset.mode)));
 
-    nitro:100,
-
-    x:50,
-
-    position:4,
-
-    startTime:0,
-
-    frame:null,
-
-    opponents:[]
-
-};
-
-
-let keys={};
-
-document.onkeydown=e=>{
-    keys[e.key.toLowerCase()]=true;
-};
-
-document.onkeyup=e=>{
-    keys[e.key.toLowerCase()]=false;
-};
-
-
-/* =========================================================
-RACE MODE BUTTONS
-========================================================= */
-
-document
-.querySelectorAll(".race-mode")
-.forEach(
-    button=>{
-
-        button.onclick=()=>{
-
-            startRace(
-                button.dataset.mode
-            );
-
-        };
-
-    }
-);
-
-
-/* =========================================================
-START RACE
-========================================================= */
-
-function startRace(mode){
-
-    race.mode=
-        mode;
-
-    race.running=
-        false;
-
-    race.speed=
-        0;
-
-    race.distance=
-        0;
-
-    race.nitro=
-        100;
-
-    race.x=
-        50;
-
-    race.position=
-        4;
-
-
-    document
-    .getElementById("raceHub")
-    .classList.add("hidden");
-
-
-    document
-    .getElementById("activeRace")
-    .classList.remove("hidden");
-
-
-    const names={
-        quick:"QUICK RACE",
-        time:"TIME TRIAL",
-        career:"CAREER",
-        drift:"DRIFT"
-    };
-
-
-    document
-    .getElementById("raceModeTitle")
-    .textContent=
-        names[mode];
-
-
-    createOpponents();
-
-
-    resetRace();
-
-
-    countdown();
-
+function startSelectedRace(mode){
+raceMode=mode;
+document.getElementById("raceMenu").classList.add("hidden");
+document.getElementById("raceGame").classList.remove("hidden");
+startRace();
 }
 
-
-/* =========================================================
-COUNTDOWN
-========================================================= */
-
-function countdown(){
-
-    const element=
-        document
-        .getElementById(
-            "raceCountdown"
-        );
-
-
-    let count=3;
-
-
-    element.textContent=
-        count;
-
-
-    const timer=
-        setInterval(
-            ()=>{
-
-                count--;
-
-
-                if(count>0){
-
-                    element.textContent=
-                        count;
-
-                }
-
-                else{
-
-                    element.textContent=
-                        "GO!";
-
-
-                    clearInterval(
-                        timer
-                    );
-
-
-                    setTimeout(
-                        ()=>{
-
-                            element.textContent="";
-
-                            race.running=
-                                true;
-
-                            race.startTime=
-                                performance.now();
-
-                            gameLoop();
-
-                        },
-                        600
-                    );
-
-                }
-
-            },
-            1000
-        );
-
+function startRace(){
+raceRunning=false;
+raceSpeed=0;
+raceDistance=0;
+raceScore=0;
+raceNitro=100;
+playerX=50;
+survivalTime=0;
+targetDistance=raceMode==="time"?4000:5000;
+trafficCars.forEach(t=>t.el.remove());
+trafficCars=[];
+document.getElementById("playerCar").style.left="50%";
+document.getElementById("raceRoad").classList.remove("crashed");
+updateRaceHUD();
+countdownRace();
 }
 
-
-/* =========================================================
-OPPONENTS
-========================================================= */
-
-function createOpponents(){
-
-    const container=
-        document
-        .getElementById(
-            "raceOpponents"
-        );
-
-
-    container.innerHTML="";
-
-
-    race.opponents=[];
-
-
-    for(
-        let i=0;
-        i<3;
-        i++
-    ){
-
-        const element=
-            document
-            .createElement("div");
-
-
-        element.className=
-            "opponent";
-
-
-        element.textContent=
-            ["🚘","🏎️","🚗"][i];
-
-
-        element.style.left=
-            (20+i*30)+"%";
-
-
-        element.style.bottom=
-            (150+i*30)+"px";
-
-
-        container.appendChild(
-            element
-        );
-
-
-        race.opponents.push({
-
-            progress:0,
-
-            speed:
-                .10+
-                Math.random()*.045,
-
-            element
-
-        });
-
-    }
-
+function countdownRace(){
+const el=document.getElementById("raceCountdown");
+el.classList.remove("hidden");
+let n=3;
+el.textContent=n;
+const timer=setInterval(()=>{
+n--;
+if(n>0){el.textContent=n;return}
+el.textContent="GO!";
+setTimeout(()=>{el.classList.add("hidden");clearInterval(timer);beginRace()},600);
+},900);
 }
 
-
-/* =========================================================
-GAME LOOP
-========================================================= */
-
-function gameLoop(){
-
-    if(!race.running)return;
-
-
-    const car=
-        cars.find(
-            c=>
-                c.id===
-                player.selectedCar
-        )||cars[0];
-
-
-    /*
-       acceleration
-    */
-
-    if(
-        keys["arrowup"]||
-        keys["w"]||
-        acceleratePressed
-    ){
-
-        race.speed+=
-            car.acceleration*
-            .035;
-
-    }
-
-    else{
-
-        race.speed*=.992;
-
-    }
-
-
-    /*
-       brake
-    */
-
-    if(
-        keys["arrowdown"]||
-        brakePressed
-    ){
-
-        race.speed*=.94;
-
-    }
-
-
-    /*
-       max speed
-    */
-
-    if(
-        race.speed>
-        car.speed
-    ){
-
-        race.speed=
-            car.speed;
-
-    }
-
-
-    /*
-       Nitro
-    */
-
-    if(
-        keys[" "]||
-        nitroPressed
-    ){
-
-        if(
-            race.nitro>0
-        ){
-
-            race.speed+=
-                5;
-
-            race.nitro-=
-                .7;
-
-        }
-
-    }
-
-    else{
-
-        race.nitro+=
-            .08;
-
-    }
-
-
-    race.nitro=
-        Math.max(
-            0,
-            Math.min(
-                100,
-                race.nitro
-            )
-        );
-
-
-    /*
-       steering
-    */
-
-    if(
-        keys["arrowleft"]||
-        keys["a"]
-    ){
-
-        race.x-=.7;
-
-    }
-
-
-    if(
-        keys["arrowright"]||
-        keys["d"]
-    ){
-
-        race.x+=.7;
-
-    }
-
-
-    race.x=
-        Math.max(
-            10,
-            Math.min(
-                90,
-                race.x
-            )
-        );
-
-
-    /*
-       distance
-    */
-
-    race.distance+=
-        race.speed/
-        car.speed*
-        .16;
-
-
-    /*
-       opponents
-    */
-
-    race.opponents.forEach(
-        opponent=>{
-
-            opponent.progress+=
-                opponent.speed;
-
-            if(
-                opponent.progress>100
-            ){
-
-                opponent.progress=100;
-
-            }
-
-
-            opponent.element.style.bottom=
-                (
-                    150+
-                    opponent.progress*
-                    3.5
-                )+"px";
-
-        }
-    );
-
-
-    /*
-       position
-    */
-
-    const progress=[
-
-        {
-            value:race.distance,
-            player:true
-        }
-
-    ];
-
-
-    race.opponents.forEach(
-        o=>
-            progress.push({
-                value:o.progress,
-                player:false
-            })
-    );
-
-
-    progress.sort(
-        (a,b)=>
-            b.value-a.value
-    );
-
-
-    race.position=
-        progress.findIndex(
-            p=>p.player
-        )+1;
-
-
-    /*
-       UI
-    */
-
-    updateRaceUI();
-
-
-    /*
-       finish
-    */
-
-    if(
-        race.distance>=100
-    ){
-
-        finishRace();
-
-        return;
-
-    }
-
-
-    race.frame=
-        requestAnimationFrame(
-            gameLoop
-        );
-
+function beginRace(){
+raceRunning=true;
+lastFrame=performance.now();
+createTraffic();
+showRaceMessage("GO!");
+animationFrame=requestAnimationFrame(raceLoop);
 }
 
-
-/* =========================================================
-RACE UI
-========================================================= */
-
-function updateRaceUI(){
-
-    document
-    .getElementById("raceSpeed")
-    .textContent=
-        Math.round(
-            race.speed
-        );
-
-
-    document
-    .getElementById("raceDistance")
-    .textContent=
-        Math.min(
-            100,
-            Math.round(
-                race.distance
-            )
-        );
-
-
-    document
-    .getElementById("racePosition")
-    .textContent=
-        race.position;
-
-
-    document
-    .getElementById("raceNitro")
-    .textContent=
-        Math.round(
-            race.nitro
-        );
-
-
-    document
-    .getElementById("playerCar")
-    .style.left=
-        race.x+"%";
-
-
-    if(
-        race.speed>
-        player.bestSpeed
-    ){
-
-        player.bestSpeed=
-            race.speed;
-
-        updateUI();
-
-    }
-
+function raceLoop(time){
+if(!raceRunning)return;
+const delta=Math.min((time-lastFrame)/1000,.05);
+lastFrame=time;
+updatePlayer(delta);
+updateTraffic(delta);
+updateDistance(delta);
+checkCollision();
+updateRaceHUD();
+if(raceMode==="survival"){
+survivalTime+=delta;
+if(survivalTime>=60){finishRace();return}
+}else if(raceDistance>=targetDistance){finishRace();return}
+animationFrame=requestAnimationFrame(raceLoop);
 }
 
-
-/* =========================================================
-RACE CONTROLS
-========================================================= */
-
-let acceleratePressed=false;
-let brakePressed=false;
-let nitroPressed=false;
-
-
-function control(
-    id,
-    variable
-){
-
-    const button=
-        document
-        .getElementById(id);
-
-
-    button.addEventListener(
-        "pointerdown",
-        ()=>{
-            if(variable==="a")
-                acceleratePressed=true;
-
-            if(variable==="b")
-                brakePressed=true;
-
-            if(variable==="n")
-                nitroPressed=true;
-        }
-    );
-
-
-    button.addEventListener(
-        "pointerup",
-        ()=>{
-            if(variable==="a")
-                acceleratePressed=false;
-
-            if(variable==="b")
-                brakePressed=false;
-
-            if(variable==="n")
-                nitroPressed=false;
-        }
-    );
-
-
-    button.addEventListener(
-        "pointerleave",
-        ()=>{
-            if(variable==="a")
-                acceleratePressed=false;
-
-            if(variable==="b")
-                brakePressed=false;
-
-            if(variable==="n")
-                nitroPressed=false;
-        }
-    );
-
+function updatePlayer(delta){
+if(raceSpeed<65)raceSpeed+=30*delta;
+if(keys.accelerate)raceSpeed+=130*delta;
+else raceSpeed-=10*delta;
+if(keys.brake)raceSpeed-=180*delta;
+if(keys.nitro&&raceNitro>0){raceSpeed+=260*delta;raceNitro-=42*delta}else raceNitro+=12*delta;
+raceNitro=Math.max(0,Math.min(100,raceNitro));
+raceSpeed=Math.max(35,Math.min(260,raceSpeed));
+if(keys.left)playerX-=48*delta;
+if(keys.right)playerX+=48*delta;
+playerX=Math.max(18,Math.min(82,playerX));
+document.getElementById("playerCar").style.left=playerX+"%";
 }
 
-
-control(
-    "accelerateButton",
-    "a"
-);
-
-control(
-    "brakeButton",
-    "b"
-);
-
-control(
-    "nitroButton",
-    "n"
-);
-
-
-document
-.getElementById("leftButton")
-.onclick=()=>{
-
-    race.x-=6;
-
-    race.x=
-        Math.max(
-            10,
-            race.x
-        );
-
-};
-
-
-document
-.getElementById("rightButton")
-.onclick=()=>{
-
-    race.x+=6;
-
-    race.x=
-        Math.min(
-            90,
-            race.x
-        );
-
-};
-
-
-/* =========================================================
-RESET RACE
-========================================================= */
-
-function resetRace(){
-
-    cancelAnimationFrame(
-        race.frame
-    );
-
-
-    document
-    .getElementById("raceResult")
-    .classList.add("hidden");
-
-
-    document
-    .getElementById("playerCar")
-    .style.left="50%";
-
-
-    document
-    .getElementById("raceSpeed")
-    .textContent="0";
-
-
-    document
-    .getElementById("raceDistance")
-    .textContent="0";
-
-
-    document
-    .getElementById("racePosition")
-    .textContent="4";
-
-
-    document
-    .getElementById("raceNitro")
-    .textContent="100";
-
+function createTraffic(){
+for(let i=0;i<7;i++)spawnTraffic(-150-i*210);
 }
 
-
-/* =========================================================
-FINISH
-========================================================= */
-
-function finishRace(){
-
-    race.running=false;
-
-
-    cancelAnimationFrame(
-        race.frame
-    );
-
-
-    player.races++;
-
-
-    let money=500;
-    let xp=150;
-
-
-    if(
-        race.position===1
-    ){
-
-        player.wins++;
-
-        money=2500;
-
-        xp=500;
-
-    }
-
-    else if(
-        race.position===2
-    ){
-
-        money=1500;
-
-        xp=350;
-
-    }
-
-    else if(
-        race.position===3
-    ){
-
-        money=900;
-
-        xp=250;
-
-    }
-
-
-    if(
-        race.mode==="time"
-    ){
-
-        money+=500;
-
-    }
-
-
-    if(
-        race.mode==="drift"
-    ){
-
-        money+=300;
-
-    }
-
-
-    player.money+=
-        money;
-
-    player.xp+=
-        xp;
-
-
-    levelUp();
-
-    updateMissions();
-
-    savePlayer();
-
-    updateUI();
-
-    renderAll();
-
-
-    const result=
-        document
-        .getElementById(
-            "raceResult"
-        );
-
-
-    document
-    .getElementById(
-        "resultIcon"
-    )
-    .textContent=
-        race.position===1
-        ?"🏆"
-        :"🏁";
-
-
-    document
-    .getElementById(
-        "resultTitle"
-    )
-    .textContent=
-        race.position===1
-        ?"VICTORY!"
-        :"FINISHED";
-
-
-    document
-    .getElementById(
-        "resultText"
-    )
-    .textContent=
-        `შენი პოზიცია: ${race.position}/4`;
-
-
-    document
-    .getElementById(
-        "resultMoney"
-    )
-    .textContent=
-        "+$"+money.toLocaleString();
-
-
-    document
-    .getElementById(
-        "resultXP"
-    )
-    .textContent=
-        "+"+xp+" XP";
-
-
-    result
-    .classList
-    .remove("hidden");
-
+function spawnTraffic(y=-100){
+const container=document.getElementById("trafficContainer");
+const el=document.createElement("div");
+el.className="traffic-car";
+const lanes=[25,38,50,62,75];
+const x=lanes[Math.floor(Math.random()*lanes.length)];
+const vehicles=["🚗","🚙","🚕","🚘","🚐","🚓"];
+el.textContent=vehicles[Math.floor(Math.random()*vehicles.length)];
+el.style.left=x+"%";
+el.style.top=y+"px";
+container.appendChild(el);
+trafficCars.push({el,x,y,speed:40+Math.random()*80});
 }
 
-
-/* =========================================================
-LEVEL UP
-========================================================= */
-
-function levelUp(){
-
-    let needed=
-        player.level*
-        1000;
-
-
-    while(
-        player.xp>=needed
-    ){
-
-        player.xp-=
-            needed;
-
-        player.level++;
-
-        needed=
-            player.level*
-            1000;
-
-
-        showNotification(
-            "🎉 LEVEL UP! LEVEL "+
-            player.level
-        );
-
-    }
-
+function updateTraffic(delta){
+const height=document.getElementById("raceRoad").clientHeight;
+trafficCars=trafficCars.filter(t=>{
+t.y+=(raceSpeed-t.speed+90)*delta;
+t.el.style.top=t.y+"px";
+if(t.y>height+150){
+t.el.remove();
+raceScore+=10;
+spawnTraffic(-180-Math.random()*300);
+return false;
+}
+return true;
+});
+if(trafficCars.length<6)spawnTraffic(-250);
 }
 
+function updateDistance(delta){raceDistance+=raceSpeed*delta*.55}
 
-/* =========================================================
-MISSIONS UPDATE
-========================================================= */
-
-function updateMissions(){
-
-    missions.forEach(
-        mission=>{
-
-            if(
-                mission.done
-            )return;
-
-
-            let completed=false;
-
-
-            if(
-                mission.id==="first" &&
-                player.races>=1
-            )
-                completed=true;
-
-
-            if(
-                mission.id==="three" &&
-                player.races>=3
-            )
-                completed=true;
-
-
-            if(
-                mission.id==="win" &&
-                player.wins>=1
-            )
-                completed=true;
-
-
-            if(
-                mission.id==="five" &&
-                player.level>=5
-            )
-                completed=true;
-
-
-            if(
-                completed
-            ){
-
-                mission.done=true;
-
-                player.money+=
-                    mission.money;
-
-                player.xp+=
-                    mission.xp;
-
-
-                showNotification(
-                    "🎯 მისია შესრულდა!"
-                );
-
-            }
-
-        }
-    );
-
-
-    levelUp();
-
+function checkCollision(){
+const p=document.getElementById("playerCar").getBoundingClientRect();
+for(const t of trafficCars){
+const r=t.el.getBoundingClientRect();
+if(p.left<r.right-8&&p.right>r.left+8&&p.top<r.bottom-10&&p.bottom>r.top+10){crashRace();return}
+}
 }
 
-
-/* =========================================================
-RACE AGAIN
-========================================================= */
-
-document
-.getElementById("raceAgainButton")
-.onclick=()=>{
-
-    startRace(
-        race.mode
-    );
-
-};
-
-
-/* =========================================================
-BACK
-========================================================= */
-
-document
-.getElementById("backRaceButton")
-.onclick=()=>{
-
-    document
-    .getElementById("activeRace")
-    .classList.add("hidden");
-
-    document
-    .getElementById("raceHub")
-    .classList.remove("hidden");
-
-};
-
-
-document
-.getElementById("exitRaceButton")
-.onclick=()=>{
-
-    if(race.running){
-
-        race.running=false;
-
-        cancelAnimationFrame(
-            race.frame
-        );
-
-    }
-
-
-    document
-    .getElementById("activeRace")
-    .classList.add("hidden");
-
-    document
-    .getElementById("raceHub")
-    .classList.remove("hidden");
-
-};
-
-
-/* =========================================================
-LOGOUT
-========================================================= */
-
-document
-.getElementById("logoutButton")
-.onclick=()=>{
-
-    if(race.running){
-
-        race.running=false;
-
-        cancelAnimationFrame(
-            race.frame
-        );
-
-    }
-
-
-    document
-    .getElementById("gameApp")
-    .classList.add("hidden");
-
-    document
-    .getElementById("authScreen")
-    .classList.remove("hidden");
-
-};
-
-
-/* =========================================================
-NOTIFICATION
-========================================================= */
-
-let notificationTimer;
-
-
-function showNotification(text){
-
-    const element=
-        document
-        .getElementById(
-            "notification"
-        );
-
-
-    element.textContent=
-        text;
-
-
-    element.style.display=
-        "block";
-
-
-    clearTimeout(
-        notificationTimer
-    );
-
-
-    notificationTimer=
-        setTimeout(
-            ()=>{
-                element.style.display=
-                    "none";
-            },
-            2500
-        );
-
+function crashRace(){
+if(!raceRunning)return;
+raceRunning=false;
+cancelAnimationFrame(animationFrame);
+document.getElementById("raceRoad").classList.add("crashed");
+showRaceMessage("💥 CRASH!");
+setTimeout(()=>showRaceResult(false),900);
 }
 
-
-/* =========================================================
-RENDER ALL
-========================================================= */
-
-function renderAll(){
-
-    renderGarage();
-
-    renderCars();
-
-    renderMissions();
-
-    renderShop();
-
-    renderLeaderboard();
-
-    updateUI();
-
+async function finishRace(){
+if(!raceRunning)return;
+raceRunning=false;
+cancelAnimationFrame(animationFrame);
+raceScore+=Math.floor(raceSpeed*2);
+if(raceSpeed>player.bestSpeed)player.bestSpeed=raceSpeed;
+player.races++;
+player.wins++;
+const reward=500+raceScore+Math.floor(raceSpeed*2);
+player.money+=reward;
+await addXP(Math.floor(reward/2));
+checkMissions();
+await savePlayer();
+updatePlayerUI();
+showRaceMessage("🏆 FINISH!");
+setTimeout(()=>showRaceResult(true,reward),900);
 }
 
-
-/* =========================================================
-STARTUP
-========================================================= */
-
-loadPlayer();
-
-
-if(
-    player.email
-){
-
-    showGame();
-
+function showRaceResult(won,reward=0){
+const result=document.createElement("div");
+result.className="race-result";
+result.innerHTML=`<div class="race-result-box"><div class="result-icon">${won?"🏆":"💥"}</div><h1>${won?"VICTORY!":"RACE OVER"}</h1><p>${won?"შენ რბოლა წარმატებით დაასრულე!":"შეჯახება მოხდა!"}</p><div class="result-stats"><div><span>DISTANCE</span><strong>${Math.floor(raceDistance)} M</strong></div><div><span>TOP SPEED</span><strong>${Math.floor(raceSpeed)} KM/H</strong></div><div><span>SCORE</span><strong>${raceScore}</strong></div><div><span>REWARD</span><strong>💰 $${reward.toLocaleString()}</strong></div></div><button id="againRace" class="primary-btn">🔄 RACE AGAIN</button><button id="exitResult" class="secondary-btn">EXIT</button></div>`;
+document.body.appendChild(result);
+document.getElementById("againRace").onclick=()=>{result.remove();startRace()};
+document.getElementById("exitResult").onclick=()=>{result.remove();exitRace()};
 }
 
+function exitRace(){
+raceRunning=false;
+if(animationFrame)cancelAnimationFrame(animationFrame);
+trafficCars.forEach(t=>t.el.remove());
+trafficCars=[];
+Object.keys(keys).forEach(k=>keys[k]=false);
+document.getElementById("raceGame").classList.add("hidden");
+document.getElementById("raceMenu").classList.remove("hidden");
+}
+
+function updateRaceHUD(){
+document.getElementById("raceSpeed").textContent=Math.floor(raceSpeed);
+document.getElementById("raceScore").textContent=raceScore;
+document.getElementById("raceNitro").style.width=raceNitro+"%";
+document.getElementById("raceDistance").textContent=raceMode==="survival"?Math.floor(survivalTime)+" SEC":Math.min(Math.floor(raceDistance),targetDistance)+" / "+targetDistance+" M";
+}
+
+function showRaceMessage(text){
+const el=document.getElementById("raceMessage");
+el.textContent=text;
+el.classList.add("show");
+setTimeout(()=>el.classList.remove("show"),800);
+}
+
+document.getElementById("exitRaceButton").addEventListener("click",exitRace);
+
+document.addEventListener("keydown",e=>{
+if(!raceRunning)return;
+const controlKeys=["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Space","KeyW","KeyA","KeyS","KeyD"];
+if(controlKeys.includes(e.code))e.preventDefault();
+if(e.code==="ArrowLeft"||e.code==="KeyA")keys.left=true;
+if(e.code==="ArrowRight"||e.code==="KeyD")keys.right=true;
+if(e.code==="ArrowUp"||e.code==="KeyW")keys.accelerate=true;
+if(e.code==="ArrowDown"||e.code==="KeyS")keys.brake=true;
+if(e.code==="Space")keys.nitro=true;
+},{passive:false});
+
+document.addEventListener("keyup",e=>{
+if(e.code==="ArrowLeft"||e.code==="KeyA")keys.left=false;
+if(e.code==="ArrowRight"||e.code==="KeyD")keys.right=false;
+if(e.code==="ArrowUp"||e.code==="KeyW")keys.accelerate=false;
+if(e.code==="ArrowDown"||e.code==="KeyS")keys.brake=false;
+if(e.code==="Space")keys.nitro=false;
+});
+
+function touchControl(id,key){
+const btn=document.getElementById(id);
+btn.addEventListener("pointerdown",e=>{e.preventDefault();keys[key]=true});
+btn.addEventListener("pointerup",e=>{e.preventDefault();keys[key]=false});
+btn.addEventListener("pointercancel",()=>keys[key]=false);
+btn.addEventListener("pointerleave",()=>keys[key]=false);
+}
+touchControl("leftButton","left");
+touchControl("rightButton","right");
+touchControl("accelerateButton","accelerate");
+touchControl("brakeButton","brake");
+touchControl("nitroButton","nitro");
 </script>
-
 </body>
 </html>
 ```
-<script src="js/race.js"></script>
