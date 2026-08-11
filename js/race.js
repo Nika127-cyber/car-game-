@@ -1,245 +1,144 @@
 /* =========================================================
    STREET LEGENDS
-   RACE SYSTEM
-========================================================= */
+   TRAFFIC RACE ENGINE
+   ========================================================= */
 
-let raceState = {
+let raceRunning = false;
+let raceFinished = false;
 
-    active: false,
+let speed = 0;
+let maxSpeed = 220;
 
-    countdown: 3,
+let distance = 0;
+let targetDistance = 5000;
 
-    speed: 0,
+let score = 0;
+let nitro = 100;
 
-    distance: 0,
+let playerX = 50;
 
-    nitro: 100,
+let trafficCars = [];
 
-    time: 0,
+let animationFrame = null;
+let lastTime = 0;
 
-    obstacles: [],
-
-    keys: {},
-
-    animationFrame: null,
-
-    timerInterval: null
-
+const keys = {
+    left: false,
+    right: false,
+    accelerate: false,
+    brake: false,
+    nitro: false
 };
 
 
 /* =========================================================
-   START RACE
-========================================================= */
+   RACE START
+   ========================================================= */
 
-function startRace() {
+function startTrafficRace() {
 
-    if (raceState.active) {
+    if (raceRunning) return;
 
-        return;
+    const raceScreen =
+        document.getElementById("raceScreen");
 
-    }
+    if (!raceScreen) return;
 
+    raceRunning = true;
+    raceFinished = false;
 
-    const car =
-        getCar(
-            player.selectedCar
-        );
+    speed = 70;
+    distance = 0;
+    score = 0;
+    nitro = 100;
 
+    playerX = 50;
 
-    if (!car) {
+    trafficCars = [];
 
-        showNotification(
-            "აირჩიე მანქანა Garage-დან."
-        );
+    lastTime = performance.now();
 
-        return;
+    resetRaceUI();
 
-    }
+    spawnInitialTraffic();
 
+    requestAnimationFrame(raceLoop);
 
-    raceState.active = true;
-
-    raceState.speed = 0;
-
-    raceState.distance = 0;
-
-    raceState.nitro = 100;
-
-    raceState.time = 0;
-
-    raceState.obstacles = [];
-
-    raceState.countdown = 3;
-
-
-    showScreen(
-        "raceScreen"
-    );
-
-
-    prepareRace();
+    showRaceMessage("GO!");
 
 }
 
 
 /* =========================================================
-   PREPARE RACE
-========================================================= */
+   RESET
+   ========================================================= */
 
-function prepareRace() {
+function resetRaceUI() {
 
-    updateRaceUI();
+    const player =
+        document.getElementById("playerCar");
 
+    if (player) {
 
-    const countdownElement =
-        document.getElementById(
-            "raceCountdown"
-        );
+        player.style.left =
+            playerX + "%";
 
-
-    if (countdownElement) {
-
-        countdownElement.style.display =
-            "flex";
+        player.style.transform =
+            "translateX(-50%)";
 
     }
 
+    const road =
+        document.getElementById("raceRoad");
 
-    let count = 3;
+    if (road) {
 
+        road.classList.remove("crashed");
 
-    const countdown =
-        setInterval(
-            () => {
+    }
 
-                if (
-                    countdownElement
-                ) {
-
-                    if (count > 0) {
-
-                        countdownElement.textContent =
-                            count;
-
-                    } else {
-
-                        countdownElement.textContent =
-                            "GO!";
-
-                    }
-
-                }
-
-
-                if (
-                    count <= 0
-                ) {
-
-                    clearInterval(
-                        countdown
-                    );
-
-
-                    setTimeout(
-                        () => {
-
-                            if (
-                                countdownElement
-                            ) {
-
-                                countdownElement.style.display =
-                                    "none";
-
-                            }
-
-
-                            beginRaceLoop();
-
-                        },
-                        600
-                    );
-
-                }
-
-
-                count--;
-
-            },
-            1000
-        );
+    updateRaceHUD();
 
 }
 
 
 /* =========================================================
-   BEGIN RACE LOOP
-========================================================= */
+   GAME LOOP
+   ========================================================= */
 
-function beginRaceLoop() {
+function raceLoop(timestamp) {
 
-    raceState.active = true;
+    if (!raceRunning) return;
 
-
-    raceState.timerInterval =
-        setInterval(
-            () => {
-
-                if (
-                    !raceState.active
-                ) {
-
-                    return;
-
-                }
-
-
-                raceState.time +=
-                    0.1;
-
-
-                updateRaceUI();
-
-            },
-            100
+    const delta =
+        Math.min(
+            (timestamp - lastTime) / 1000,
+            0.05
         );
 
+    lastTime = timestamp;
 
-    raceState.animationFrame =
-        requestAnimationFrame(
-            raceLoop
-        );
+    updatePlayer(delta);
 
-}
+    updateTraffic(delta);
 
-
-/* =========================================================
-   RACE LOOP
-========================================================= */
-
-function raceLoop() {
-
-    if (
-        !raceState.active
-    ) {
-
-        return;
-
-    }
-
-
-    updatePhysics();
-
-    updateRoad();
-
-    updateObstacles();
+    updateDistance(delta);
 
     checkCollisions();
 
-    updateRaceUI();
+    updateRaceHUD();
 
+    if (
+        distance >= targetDistance
+    ) {
 
-    raceState.animationFrame =
+        finishRace();
+
+        return;
+
+    }
+
+    animationFrame =
         requestAnimationFrame(
             raceLoop
         );
@@ -248,149 +147,116 @@ function raceLoop() {
 
 
 /* =========================================================
-   PHYSICS
-========================================================= */
+   PLAYER
+   ========================================================= */
 
-function updatePhysics() {
+function updatePlayer(delta) {
 
-    const car =
-        getCar(
-            player.selectedCar
+    if (keys.accelerate) {
+
+        speed +=
+            100 * delta;
+
+    } else {
+
+        speed -=
+            25 * delta;
+
+    }
+
+
+    if (keys.brake) {
+
+        speed -=
+            180 * delta;
+
+    }
+
+
+    if (keys.nitro && nitro > 0) {
+
+        speed +=
+            250 * delta;
+
+        nitro -=
+            35 * delta;
+
+    } else {
+
+        nitro +=
+            8 * delta;
+
+    }
+
+
+    speed =
+        Math.max(
+            0,
+            Math.min(
+                maxSpeed,
+                speed
+            )
         );
 
 
-    if (!car) {
+    nitro =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                nitro
+            )
+        );
 
-        return;
+
+    /*
+       STEERING
+    */
+
+    const steeringSpeed =
+        45 * delta;
+
+
+    if (keys.left) {
+
+        playerX -=
+            steeringSpeed;
 
     }
 
 
-    const maxSpeed =
-        car.stats.speed;
+    if (keys.right) {
 
-
-    /*
-       Acceleration
-    */
-
-    if (
-        raceState.keys["ArrowUp"] ||
-        raceState.keys["w"] ||
-        raceState.keys["W"]
-    ) {
-
-        raceState.speed +=
-            car.stats.acceleration *
-            0.025;
-
-    } else {
-
-        raceState.speed -=
-            0.015;
-
-    }
-
-
-    /*
-       Braking
-    */
-
-    if (
-        raceState.keys["ArrowDown"] ||
-        raceState.keys["s"] ||
-        raceState.keys["S"]
-    ) {
-
-        raceState.speed -=
-            car.stats.braking *
-            0.035;
+        playerX +=
+            steeringSpeed;
 
     }
 
 
     /*
-       Nitro
+       Road limits
     */
 
-    if (
-        (
-            raceState.keys["Shift"] ||
-            raceState.keys[" "]
-        ) &&
-        raceState.nitro > 0 &&
-        raceState.speed > 30
-    ) {
-
-        raceState.speed +=
-            car.stats.nitro *
-            0.055;
+    playerX =
+        Math.max(
+            12,
+            Math.min(
+                88,
+                playerX
+            )
+        );
 
 
-        raceState.nitro -=
-            0.35;
-
-    } else {
-
-        if (
-            raceState.nitro < 100
-        ) {
-
-            raceState.nitro +=
-                0.08;
-
-        }
-
-    }
+    const player =
+        document.getElementById(
+            "playerCar"
+        );
 
 
-    /*
-       Limit speed
-    */
+    if (player) {
 
-    const maxWithNitro =
-        maxSpeed *
-        1.25;
-
-
-    if (
-        raceState.speed >
-        maxWithNitro
-    ) {
-
-        raceState.speed =
-            maxWithNitro;
-
-    }
-
-
-    if (
-        raceState.speed < 0
-    ) {
-
-        raceState.speed = 0;
-
-    }
-
-
-    /*
-       Distance
-    */
-
-    raceState.distance +=
-        raceState.speed *
-        0.00075;
-
-
-    /*
-       Finish
-    */
-
-    if (
-        raceState.distance >= 5
-    ) {
-
-        finishRace(true);
+        player.style.left =
+            playerX + "%";
 
     }
 
@@ -398,95 +264,157 @@ function updatePhysics() {
 
 
 /* =========================================================
-   ROAD
-========================================================= */
+   TRAFFIC
+   ========================================================= */
 
-function updateRoad() {
+function spawnInitialTraffic() {
+
+    for (
+        let i = 0;
+        i < 7;
+        i++
+    ) {
+
+        spawnTraffic(
+            120 + i * 18
+        );
+
+    }
+
+}
+
+
+function spawnTraffic(startY = 120) {
 
     const road =
         document.getElementById(
             "raceRoad"
         );
 
-
-    if (!road) {
-
-        return;
-
-    }
+    if (!road) return;
 
 
-    const movement =
-        (
-            raceState.speed *
-            0.8
+    const car =
+        document.createElement(
+            "div"
         );
 
 
-    road.style.setProperty(
-        "--road-speed",
-        movement + "px"
+    car.className =
+        "traffic-car";
+
+
+    const lanes = [
+        25,
+        40,
+        60,
+        75
+    ];
+
+
+    const lane =
+        lanes[
+            Math.floor(
+                Math.random() *
+                lanes.length
+            )
+        ];
+
+
+    const emojis = [
+        "🚙",
+        "🚕",
+        "🚘",
+        "🚗",
+        "🚐",
+        "🚓"
+    ];
+
+
+    car.textContent =
+        emojis[
+            Math.floor(
+                Math.random() *
+                emojis.length
+            )
+        ];
+
+
+    car.style.left =
+        lane + "%";
+
+
+    car.style.top =
+        startY + "%";
+
+
+    road.appendChild(
+        car
     );
+
+
+    trafficCars.push({
+
+        element: car,
+
+        x: lane,
+
+        y: startY,
+
+        speed:
+            35 +
+            Math.random() * 50
+
+    });
 
 }
 
 
 /* =========================================================
-   OBSTACLES
-========================================================= */
+   TRAFFIC UPDATE
+   ========================================================= */
 
-function updateObstacles() {
+function updateTraffic(delta) {
 
-    /*
-       Spawn random traffic
-    */
+    trafficCars.forEach(
+        traffic => {
 
-    if (
-        Math.random() <
-        0.015
-    ) {
-
-        spawnObstacle();
-
-    }
+            traffic.y +=
+                (
+                    speed -
+                    traffic.speed +
+                    80
+                ) *
+                delta;
 
 
-    raceState.obstacles.forEach(
-        obstacle => {
-
-            obstacle.y +=
-                raceState.speed *
-                0.045;
-
-
-            if (
-                obstacle.element
-            ) {
-
-                obstacle.element.style.top =
-                    obstacle.y + "%";
-
-            }
+            traffic.element.style.top =
+                traffic.y + "%";
 
         }
     );
 
 
-    raceState.obstacles =
-        raceState.obstacles.filter(
-            obstacle => {
+    /*
+       Remove cars that passed
+    */
+
+    trafficCars =
+        trafficCars.filter(
+            traffic => {
 
                 if (
-                    obstacle.y > 110
+                    traffic.y >
+                    120
                 ) {
 
-                    if (
-                        obstacle.element
-                    ) {
+                    traffic.element.remove();
 
-                        obstacle.element.remove();
+                    spawnTraffic(
+                        -20
+                    );
 
-                    }
+                    score += 10;
 
                     return false;
 
@@ -501,10 +429,90 @@ function updateObstacles() {
 
 
 /* =========================================================
-   SPAWN OBSTACLE
-========================================================= */
+   DISTANCE
+   ========================================================= */
 
-function spawnObstacle() {
+function updateDistance(delta) {
+
+    distance +=
+        speed *
+        delta *
+        0.45;
+
+}
+
+
+/* =========================================================
+   COLLISION
+   ========================================================= */
+
+function checkCollisions() {
+
+    const player =
+        document.getElementById(
+            "playerCar"
+        );
+
+
+    if (!player) return;
+
+
+    const playerRect =
+        player.getBoundingClientRect();
+
+
+    for (
+        const traffic of trafficCars
+    ) {
+
+        const trafficRect =
+            traffic.element.getBoundingClientRect();
+
+
+        const collision =
+            playerRect.left <
+                trafficRect.right &&
+            playerRect.right >
+                trafficRect.left &&
+            playerRect.top <
+                trafficRect.bottom &&
+            playerRect.bottom >
+                trafficRect.top;
+
+
+        if (collision) {
+
+            crashRace();
+
+            return;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CRASH
+   ========================================================= */
+
+function crashRace() {
+
+    if (!raceRunning) return;
+
+    raceRunning = false;
+    raceFinished = false;
+
+
+    if (animationFrame) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+    }
+
 
     const road =
         document.getElementById(
@@ -512,177 +520,287 @@ function spawnObstacle() {
         );
 
 
-    if (!road) {
+    if (road) {
 
-        return;
+        road.classList.add(
+            "crashed"
+        );
 
     }
 
 
-    const obstacle =
+    showRaceMessage(
+        "💥 CRASH!"
+    );
+
+
+    setTimeout(
+        () => {
+
+            showRaceResult(
+                false
+            );
+
+        },
+        1200
+    );
+
+}
+
+
+/* =========================================================
+   FINISH
+   ========================================================= */
+
+function finishRace() {
+
+    if (!raceRunning) return;
+
+    raceRunning = false;
+    raceFinished = true;
+
+
+    if (animationFrame) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+    }
+
+
+    score +=
+        Math.floor(
+            speed
+        );
+
+
+    showRaceMessage(
+        "🏁 FINISH!"
+    );
+
+
+    setTimeout(
+        () => {
+
+            showRaceResult(
+                true
+            );
+
+        },
+        1000
+    );
+
+}
+
+
+/* =========================================================
+   RESULT
+   ========================================================= */
+
+function showRaceResult(
+    won
+) {
+
+    const reward =
+        won
+            ? Math.floor(
+                500 +
+                speed * 4 +
+                score
+            )
+            : 0;
+
+
+    const result =
         document.createElement(
             "div"
         );
 
 
-    obstacle.className =
-        "race-obstacle";
+    result.className =
+        "race-result";
 
 
-    obstacle.textContent =
-        Math.random() >
-        0.5
-        ? "🚗"
-        : "🚙";
+    result.innerHTML = `
+
+        <div class="race-result-box">
+
+            <div class="result-icon">
+                ${won ? "🏆" : "💥"}
+            </div>
+
+            <h1>
+                ${
+                    won
+                    ? "RACE COMPLETE"
+                    : "RACE OVER"
+                }
+            </h1>
+
+            <p>
+                ${
+                    won
+                    ? "შენ ფინიშამდე მიხვედი!"
+                    : "მანქანას დაეჯახე!"
+                }
+            </p>
+
+            <div class="result-stats">
+
+                <div>
+                    <span>DISTANCE</span>
+                    <strong>
+                        ${Math.floor(distance)} m
+                    </strong>
+                </div>
+
+                <div>
+                    <span>SPEED</span>
+                    <strong>
+                        ${Math.floor(speed)} km/h
+                    </strong>
+                </div>
+
+                <div>
+                    <span>SCORE</span>
+                    <strong>
+                        ${score}
+                    </strong>
+                </div>
+
+                ${
+                    won
+                    ? `
+                    <div>
+                        <span>REWARD</span>
+                        <strong>
+                            💰 $${reward}
+                        </strong>
+                    </div>
+                    `
+                    : ""
+                }
+
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="
+                    closeRaceResult();
+                    startTrafficRace();
+                "
+            >
+                🔄 AGAIN
+            </button>
+
+            <button
+                class="secondary-btn"
+                onclick="
+                    closeRaceResult();
+                "
+            >
+                EXIT
+
+            </button>
+
+        </div>
+
+    `;
 
 
-    const lane =
-        Math.floor(
-            Math.random() * 3
-        );
-
-
-    obstacle.dataset.lane =
-        lane;
-
-
-    const x =
-        20 +
-        lane *
-        30;
-
-
-    obstacle.style.position =
-        "absolute";
-
-
-    obstacle.style.left =
-        x + "%";
-
-
-    obstacle.style.top =
-        "-15%";
-
-
-    obstacle.style.fontSize =
-        "38px";
-
-
-    obstacle.style.transform =
-        "translateX(-50%)";
-
-
-    road.appendChild(
-        obstacle
+    document.body.appendChild(
+        result
     );
 
 
-    raceState.obstacles.push({
+    /*
+       Add money if player system exists
+    */
 
-        element:
-            obstacle,
+    if (
+        won &&
+        typeof player !== "undefined"
+    ) {
 
-        lane:
-            lane,
+        player.money += reward;
 
-        x:
-            x,
+        if (
+            typeof updatePlayerUI ===
+            "function"
+        ) {
 
-        y:
-            -15
+            updatePlayerUI();
 
-    });
-
-}
-
-
-/* =========================================================
-   COLLISIONS
-========================================================= */
-
-function checkCollisions() {
-
-    const playerCar =
-        document.getElementById(
-            "playerCar"
-        );
-
-
-    if (!playerCar) {
-
-        return;
+        }
 
     }
 
-
-    const playerRect =
-        playerCar.getBoundingClientRect();
+}
 
 
-    raceState.obstacles.forEach(
-        obstacle => {
+function closeRaceResult() {
 
-            if (
-                !obstacle.element
-            ) {
-
-                return;
-
-            }
+    const result =
+        document.querySelector(
+            ".race-result"
+        );
 
 
-            const obstacleRect =
-                obstacle.element
-                    .getBoundingClientRect();
+    if (result) {
+
+        result.remove();
+
+    }
+
+}
 
 
-            const collision =
+/* =========================================================
+   RACE MESSAGE
+   ========================================================= */
 
-                playerRect.left <
-                obstacleRect.right &&
+function showRaceMessage(
+    text
+) {
 
-                playerRect.right >
-                obstacleRect.left &&
-
-                playerRect.top <
-                obstacleRect.bottom &&
-
-                playerRect.bottom >
-                obstacleRect.top;
-
-
-            if (collision) {
-
-                raceState.speed *=
-                    0.45;
+    const message =
+        document.getElementById(
+            "raceMessage"
+        );
 
 
-                raceState.nitro -=
-                    10;
+    if (!message) return;
 
 
-                obstacle.element
-                    .style.transform =
-                    "translateX(-50%) rotate(15deg)";
+    message.textContent =
+        text;
 
 
-                showNotification(
-                    "💥 შეჯახება!"
-                );
+    message.classList.add(
+        "show"
+    );
 
-            }
 
-        }
+    setTimeout(
+        () => {
+
+            message.classList.remove(
+                "show"
+            );
+
+        },
+        900
     );
 
 }
 
 
 /* =========================================================
-   RACE UI
-========================================================= */
+   HUD
+   ========================================================= */
 
-function updateRaceUI() {
+function updateRaceHUD() {
 
     const speedElement =
         document.getElementById(
@@ -696,25 +814,22 @@ function updateRaceUI() {
         );
 
 
+    const scoreElement =
+        document.getElementById(
+            "raceScore"
+        );
+
+
     const nitroElement =
         document.getElementById(
             "raceNitro"
         );
 
 
-    const timerElement =
-        document.getElementById(
-            "raceTimer"
-        );
-
-
     if (speedElement) {
 
         speedElement.textContent =
-            Math.round(
-                raceState.speed
-            ) +
-            " KM/H";
+            Math.floor(speed);
 
     }
 
@@ -722,9 +837,18 @@ function updateRaceUI() {
     if (distanceElement) {
 
         distanceElement.textContent =
-            raceState.distance
-                .toFixed(2) +
-            " KM";
+            Math.floor(distance)
+            + " / "
+            + targetDistance
+            + " m";
+
+    }
+
+
+    if (scoreElement) {
+
+        scoreElement.textContent =
+            score;
 
     }
 
@@ -732,411 +856,95 @@ function updateRaceUI() {
     if (nitroElement) {
 
         nitroElement.style.width =
-            raceState.nitro +
-            "%";
+            nitro + "%";
 
     }
-
-
-    if (timerElement) {
-
-        timerElement.textContent =
-            formatRaceTime(
-                raceState.time
-            );
-
-    }
-
-}
-
-
-/* =========================================================
-   TIME FORMAT
-========================================================= */
-
-function formatRaceTime(
-    seconds
-) {
-
-    const minutes =
-        Math.floor(
-            seconds / 60
-        );
-
-
-    const secs =
-        Math.floor(
-            seconds % 60
-        );
-
-
-    const ms =
-        Math.floor(
-            (
-                seconds %
-                1
-            ) * 100
-        );
-
-
-    return (
-
-        String(
-            minutes
-        ).padStart(
-            2,
-            "0"
-        )
-
-        +
-
-        ":" +
-
-        String(
-            secs
-        ).padStart(
-            2,
-            "0"
-        )
-
-        +
-
-        ":" +
-
-        String(
-            ms
-        ).padStart(
-            2,
-            "0"
-        )
-
-    );
-
-}
-
-
-/* =========================================================
-   FINISH RACE
-========================================================= */
-
-function finishRace(
-    won
-) {
-
-    if (
-        !raceState.active
-    ) {
-
-        return;
-
-    }
-
-
-    raceState.active =
-        false;
-
-
-    if (
-        raceState.animationFrame
-    ) {
-
-        cancelAnimationFrame(
-            raceState.animationFrame
-        );
-
-    }
-
-
-    if (
-        raceState.timerInterval
-    ) {
-
-        clearInterval(
-            raceState.timerInterval
-        );
-
-    }
-
-
-    const rewardMoney =
-        won
-        ? 2500
-        : 500;
-
-
-    const rewardXP =
-        won
-        ? 750
-        : 200;
-
-
-    completeRace(
-        won,
-        rewardMoney,
-        rewardXP
-    );
-
-
-    showRaceResult(
-        won,
-        rewardMoney,
-        rewardXP
-    );
-
-}
-
-
-/* =========================================================
-   RACE RESULT
-========================================================= */
-
-function showRaceResult(
-    won,
-    money,
-    xp
-) {
-
-    let modal =
-        document.getElementById(
-            "raceResultModal"
-        );
-
-
-    if (!modal) {
-
-        modal =
-            document.createElement(
-                "div"
-            );
-
-
-        modal.id =
-            "raceResultModal";
-
-
-        modal.style.position =
-            "fixed";
-
-        modal.style.inset =
-            "0";
-
-        modal.style.background =
-            "rgba(0,0,0,.8)";
-
-        modal.style.zIndex =
-            "99999";
-
-        modal.style.display =
-            "flex";
-
-        modal.style.alignItems =
-            "center";
-
-        modal.style.justifyContent =
-            "center";
-
-
-        document.body.appendChild(
-            modal
-        );
-
-    }
-
-
-    modal.innerHTML = `
-
-        <div
-            style="
-                width:min(
-                    420px,
-                    90%
-                );
-                background:#11151d;
-                border:1px solid #303744;
-                border-radius:20px;
-                padding:30px;
-                text-align:center;
-            "
-        >
-
-            <div
-                style="
-                    font-size:55px;
-                    margin-bottom:15px;
-                "
-            >
-
-                ${
-                    won
-                    ? "🏆"
-                    : "🏁"
-                }
-
-            </div>
-
-
-            <h2>
-
-                ${
-                    won
-                    ? "RACE WON!"
-                    : "RACE FINISHED"
-                }
-
-            </h2>
-
-
-            <p
-                style="
-                    color:#8d96a5;
-                    margin-top:10px;
-                "
-            >
-
-                დრო:
-                ${formatRaceTime(
-                    raceState.time
-                )}
-
-            </p>
-
-
-            <div
-                style="
-                    display:flex;
-                    justify-content:center;
-                    gap:25px;
-                    margin:25px 0;
-                "
-            >
-
-                <div>
-
-                    <strong
-                        style="
-                            color:#ffd700;
-                            font-size:22px;
-                        "
-                    >
-                        +$${money.toLocaleString()}
-                    </strong>
-
-                    <small
-                        style="
-                            display:block;
-                            color:#8d96a5;
-                        "
-                    >
-                        MONEY
-                    </small>
-
-                </div>
-
-
-                <div>
-
-                    <strong
-                        style="
-                            color:#60a5fa;
-                            font-size:22px;
-                        "
-                    >
-                        +${xp} XP
-                    </strong>
-
-                    <small
-                        style="
-                            display:block;
-                            color:#8d96a5;
-                        "
-                    >
-                        EXPERIENCE
-                    </small>
-
-                </div>
-
-            </div>
-
-
-            <button
-                onclick="
-                    closeRaceResult()
-                "
-                style="
-                    width:100%;
-                    padding:13px;
-                    border:none;
-                    border-radius:9px;
-                    background:#ff3b30;
-                    color:white;
-                    font-weight:bold;
-                    cursor:pointer;
-                "
-            >
-
-                CONTINUE
-
-            </button>
-
-        </div>
-
-    `;
-
-
-    modal.style.display =
-        "flex";
-
-}
-
-
-/* =========================================================
-   CLOSE RESULT
-========================================================= */
-
-function closeRaceResult() {
-
-    const modal =
-        document.getElementById(
-            "raceResultModal"
-        );
-
-
-    if (modal) {
-
-        modal.remove();
-
-    }
-
-
-    showScreen(
-        "homeScreen"
-    );
 
 }
 
 
 /* =========================================================
    KEYBOARD CONTROLS
-========================================================= */
+   ========================================================= */
 
 document.addEventListener(
     "keydown",
     event => {
 
-        raceState.keys[
-            event.key
-        ] = true;
-
+        /*
+           IMPORTANT:
+           Stop browser default actions.
+        */
 
         if (
-            event.key ===
-            " "
+            raceRunning &&
+            [
+                "ArrowUp",
+                "ArrowDown",
+                "ArrowLeft",
+                "ArrowRight",
+                "Space",
+                "KeyW",
+                "KeyA",
+                "KeyS",
+                "KeyD"
+            ].includes(
+                event.code
+            )
         ) {
 
             event.preventDefault();
 
         }
 
+
+        switch (
+            event.code
+        ) {
+
+            case "ArrowLeft":
+            case "KeyA":
+
+                keys.left = true;
+
+                break;
+
+
+            case "ArrowRight":
+            case "KeyD":
+
+                keys.right = true;
+
+                break;
+
+
+            case "ArrowUp":
+            case "KeyW":
+
+                keys.accelerate = true;
+
+                break;
+
+
+            case "ArrowDown":
+            case "KeyS":
+
+                keys.brake = true;
+
+                break;
+
+
+            case "Space":
+
+                keys.nitro = true;
+
+                break;
+
+        }
+
+    },
+    {
+        passive: false
     }
 );
 
@@ -1145,9 +953,49 @@ document.addEventListener(
     "keyup",
     event => {
 
-        raceState.keys[
-            event.key
-        ] = false;
+        switch (
+            event.code
+        ) {
+
+            case "ArrowLeft":
+            case "KeyA":
+
+                keys.left = false;
+
+                break;
+
+
+            case "ArrowRight":
+            case "KeyD":
+
+                keys.right = false;
+
+                break;
+
+
+            case "ArrowUp":
+            case "KeyW":
+
+                keys.accelerate = false;
+
+                break;
+
+
+            case "ArrowDown":
+            case "KeyS":
+
+                keys.brake = false;
+
+                break;
+
+
+            case "Space":
+
+                keys.nitro = false;
+
+                break;
+
+        }
 
     }
 );
@@ -1155,91 +1003,57 @@ document.addEventListener(
 
 /* =========================================================
    MOBILE CONTROLS
-========================================================= */
+   ========================================================= */
 
-function setupMobileControls() {
+function setupTouchButton(
+    id,
+    key
+) {
 
-    const buttons =
-        document.querySelectorAll(
-            "[data-control]"
+    const button =
+        document.getElementById(
+            id
         );
 
 
-    buttons.forEach(
-        button => {
-
-            const control =
-                button.dataset.control;
+    if (!button) return;
 
 
-            button.addEventListener(
-                "touchstart",
-                event => {
+    button.addEventListener(
+        "touchstart",
+        event => {
 
-                    event.preventDefault();
+            event.preventDefault();
 
-                    raceState.keys[
-                        control
-                    ] = true;
+            keys[key] = true;
 
-                },
-                {
-                    passive:false
-                }
-            );
+        },
+        {
+            passive: false
+        }
+    );
 
 
-            button.addEventListener(
-                "touchend",
-                event => {
+    button.addEventListener(
+        "touchend",
+        event => {
 
-                    event.preventDefault();
+            event.preventDefault();
 
-                    raceState.keys[
-                        control
-                    ] = false;
+            keys[key] = false;
 
-                },
-                {
-                    passive:false
-                }
-            );
+        },
+        {
+            passive: false
+        }
+    );
 
 
-            button.addEventListener(
-                "mousedown",
-                () => {
+    button.addEventListener(
+        "touchcancel",
+        () => {
 
-                    raceState.keys[
-                        control
-                    ] = true;
-
-                }
-            );
-
-
-            button.addEventListener(
-                "mouseup",
-                () => {
-
-                    raceState.keys[
-                        control
-                    ] = false;
-
-                }
-            );
-
-
-            button.addEventListener(
-                "mouseleave",
-                () => {
-
-                    raceState.keys[
-                        control
-                    ] = false;
-
-                }
-            );
+            keys[key] = false;
 
         }
     );
@@ -1247,15 +1061,80 @@ function setupMobileControls() {
 }
 
 
-/* =========================================================
-   INITIALIZE RACE SYSTEM
-========================================================= */
-
 document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        setupMobileControls();
+        setupTouchButton(
+            "leftButton",
+            "left"
+        );
+
+        setupTouchButton(
+            "rightButton",
+            "right"
+        );
+
+        setupTouchButton(
+            "accelerateButton",
+            "accelerate"
+        );
+
+        setupTouchButton(
+            "brakeButton",
+            "brake"
+        );
+
+        setupTouchButton(
+            "nitroButton",
+            "nitro"
+        );
 
     }
 );
+
+
+/* =========================================================
+   PREVENT SCROLL WHILE PLAYING
+   ========================================================= */
+
+window.addEventListener(
+    "wheel",
+    event => {
+
+        if (raceRunning) {
+
+            event.preventDefault();
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+window.addEventListener(
+    "touchmove",
+    event => {
+
+        if (raceRunning) {
+
+            event.preventDefault();
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+/* =========================================================
+   EXPORT
+   ========================================================= */
+
+window.startTrafficRace =
+    startTrafficRace;
